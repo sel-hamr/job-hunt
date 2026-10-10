@@ -1,7 +1,7 @@
 # FrontEnd: rules for AI agents
 
 Read `README.md` first. It has the plan and all decisions.
-Server rules: `Server/AGENTS.md`. Admin API list: `Server/docs/API.md`.
+Server rules: `Server/AGENTS.md`. Admin API list: `Server/docs/API.md`. Data shapes (`@jobhunt/shared`): `Server/docs/SHARED.md`.
 
 ## What this is
 

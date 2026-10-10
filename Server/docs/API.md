@@ -17,7 +17,7 @@ Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **serve
 | Login | Every address **except** `POST /api/auth/login` needs `Authorization: Bearer <session>`. No valid session -> **401**. |
 | Layers | Same as tools: **route -> service -> repository**. A route checks the input, calls a service and returns JSON. No SQL and no logic in routes. |
 | Same services | The API calls **the same services** as the MCP tools. So every rule (quote check, proofs, "AI edits make an item unchecked", ...) works the same way. |
-| Shapes | Inputs and outputs use the Zod schemas from `@jobhunt/shared` (`packages/shared/`). |
+| Shapes | Inputs and outputs use the Zod schemas from `@jobhunt/shared` (`packages/shared/`). Every shape and its fields: `SHARED.md`. JSON uses `snake_case`, `true`/`false` (not `0`/`1`), real lists (not JSON text) and `null` for empty. |
 | Errors | JSON: `{ "error": "short message", "problems": ["...", "..."] }`. **400** = wrong input (a list of **all** problems at once, like the tools). **401** = no valid session. **404** = not found. **429** = too many login tries. |
 | Browsers | **No CORS headers.** A browser page can't call the API directly. Only the Next.js server can. |
 | Logs | Never log passwords or session tokens. Logs go to stderr. |
@@ -38,7 +38,7 @@ Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **serve
 
 | Method + address | What it does | Output |
 |---|---|---|
-| `GET /api/stats` | The numbers for Home. Read-only. | `jobs_total`, `jobs_by_fit` (Good fit / Some gaps / Big gaps), `unchecked_items`, `top_missing_skills` (5, from the gap report) |
+| `GET /api/stats` | The numbers for Home. Read-only. | `jobs_total`, `jobs_by_fit` (Good fit / Some gaps / Big gaps / not matched yet), `unchecked_items`, `top_missing_skills` (5, from the gap report) |
 
 ---
 

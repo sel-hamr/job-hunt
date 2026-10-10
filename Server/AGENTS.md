@@ -23,6 +23,7 @@ Plus one shared package and two apps outside this folder:
 **All tables, columns and database rules:** read `docs/DATABASE.md`. If you change the database, update that file in the same change.
 **All MCP tools and prompts:** read `docs/TOOLS.md`. If you add or change a tool, update that file in the same change.
 **All admin API addresses (for the dashboard):** read `docs/API.md`. If you add or change an address, update that file in the same change.
+**All shared data shapes (`@jobhunt/shared`):** read `docs/SHARED.md`. If you add or change a shape, update that file in the same change.
 The most important product rule: **never invent facts.** Every fact in a CV or cover letter needs a proof link to a profile item that the user has **checked** (`checked = yes`).
 
 ## Current status

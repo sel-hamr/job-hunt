@@ -1,6 +1,7 @@
 # shared (the common language)
 
 Package name: **`@jobhunt/shared`**.
+Full rules, naming and every shape: **`docs/SHARED.md`** (the source of truth).
 
 The **shapes of the data** (Zod schemas + TypeScript types) that more than one program needs:
 - the **server** uses them to check admin API input and output,

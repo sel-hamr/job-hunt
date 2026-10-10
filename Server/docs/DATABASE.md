@@ -459,7 +459,7 @@ These are **counted when asked** (SQL views or queries), never saved. So they ar
 
 | What | How |
 |---|---|
-| **Fit label** of a job | From `matches` of its must-haves: all `yes` → **Good fit**. Exactly 1 `no`, or no `no` but at least 1 `partly` → **Some gaps**. 2 or more `no` → **Big gaps**. |
+| **Fit label** of a job | From `matches` of its must-haves: all `yes` → **Good fit**. Exactly 1 `no`, or no `no` but at least 1 `partly` → **Some gaps**. 2 or more `no` → **Big gaps**. No match saved yet → **Not matched**. |
 | **Gap report** | Count the keywords of requirements whose match is `no` (or `partly`), across all jobs, **including skipped ones**. Filters: last N jobs, date range, must-have only. |
 | **Years of a skill** | From the dates of the checked experiences and projects that prove it. Overlapping time is counted once. |
 
