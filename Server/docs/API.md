@@ -1,0 +1,86 @@
+# Admin API (for the dashboard)
+
+Every address of the server's admin API. **This file is the source of truth for the admin API.**
+If you add or change an address, update this file in the same change.
+
+Status: planning. No code yet.
+
+Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **server side**. The AI apps use `/mcp`, never `/api`.
+
+---
+
+## 1. Rules for all addresses
+
+| Rule | Detail |
+|---|---|
+| Where | The HTTP transport, next to `/mcp`. Base: `/api`. Listens on `127.0.0.1` only. |
+| Login | Every address **except** `POST /api/auth/login` needs `Authorization: Bearer <session>`. No valid session -> **401**. |
+| Layers | Same as tools: **route -> service -> repository**. A route checks the input, calls a service and returns JSON. No SQL and no logic in routes. |
+| Same services | The API calls **the same services** as the MCP tools. So every rule (quote check, proofs, "AI edits make an item unchecked", ...) works the same way. |
+| Shapes | Inputs and outputs use the Zod schemas from `@jobhunt/shared` (`packages/shared/`). |
+| Errors | JSON: `{ "error": "short message", "problems": ["...", "..."] }`. **400** = wrong input (a list of **all** problems at once, like the tools). **401** = no valid session. **404** = not found. **429** = too many login tries. |
+| Browsers | **No CORS headers.** A browser page can't call the API directly. Only the Next.js server can. |
+| Logs | Never log passwords or session tokens. Logs go to stderr. |
+
+---
+
+## 2. Auth
+
+| Method + address | What it does | Input | Output |
+|---|---|---|---|
+| `POST /api/auth/login` | Check email + password, make a session. | `email`, `password` | `session` (the token), `expires_at`. Wrong email or password -> **401** "Wrong email or password" (same message for both). 5 wrong tries -> **429** for 1 minute. |
+| `POST /api/auth/logout` | Delete this session. | | **204** |
+| `GET /api/auth/me` | Who am I? | | `email` |
+
+---
+
+## 3. Home
+
+| Method + address | What it does | Output |
+|---|---|---|
+| `GET /api/stats` | The numbers for Home. Read-only. | `jobs_total`, `jobs_by_fit` (Good fit / Some gaps / Big gaps), `unchecked_items`, `top_missing_skills` (5, from the gap report) |
+
+---
+
+## 4. Profile
+
+`:type` is one of: `experience`, `achievement`, `skill`, `skill_proof`, `project`, `education`, `certificate`, `language`. Same idea as the `profile_item_*` tools: one set of addresses for all kinds.
+
+| Method + address | What it does | Input | Output |
+|---|---|---|---|
+| `GET /api/profile` | My profile and all items, grouped by kind. | | Profile + items (each with `checked`) |
+| `PATCH /api/profile` | Change my profile (name, headline, ...). | The fields to change | The changed profile |
+| `POST /api/profile/items` | Add an item. | `type` + the fields of that kind | The new item (`source = manual`, `checked = 0`) |
+| `PATCH /api/profile/items/:type/:id` | Change an item. | The fields to change | The changed item. **If it was checked, it becomes not checked.** |
+| `DELETE /api/profile/items/:type/:id` | Delete an item (its proofs are deleted too). | | What was deleted |
+
+---
+
+## 5. Review (checking items)
+
+| Method + address | What it does | Input | Output |
+|---|---|---|---|
+| `GET /api/review` | Items with `checked = 0`, grouped (for example one experience with its achievements). | | Groups of items |
+| `POST /api/review/check` | **Set `checked = 1`** (and `checked_at`). | `items`: a list of `{ type, id }` | The checked items |
+| `POST /api/review/fix` | Fix an item **and** check it (a fix by me stays checked). | `type`, `id`, the fields to change | The fixed, checked item |
+
+This is the **only** way, with the `review_items` elicitation and the review script, to set `checked = 1`. See `DATABASE.md`, part 12.
+
+---
+
+## 6. Jobs
+
+| Method + address | What it does | Input | Output |
+|---|---|---|---|
+| `GET /api/jobs` | List my jobs. | Query: `fit`, `include_skipped` (default no), `limit` (default 20), `offset` | Jobs: id, title, company, fit label, date + `total` |
+| `GET /api/jobs/:id` | One job with requirements, match results, proofs and fit label. | | The job |
+| `PATCH /api/jobs/:id` | Change job fields. **Never `full_text`.** | The fields to change | The changed job |
+| `POST /api/jobs/:id/skip` | Skip or un-skip. | `skipped` (yes/no), `reason` (**required** when skipping) | The changed job |
+
+Adding jobs is **not** in the API. Jobs come in through the AI app (`job_add`).
+
+---
+
+## 7. Later
+
+Addresses for Companies, Documents, Learning, Gap report and Settings come with their server step (see `PRODUCT.md`, "Build order").

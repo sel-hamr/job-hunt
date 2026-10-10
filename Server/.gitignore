@@ -1,0 +1,12 @@
+# packages
+node_modules/
+dist/
+
+# my personal data: never in git
+packages/server/data/*.sqlite
+packages/server/data/*.sqlite-wal
+packages/server/data/*.sqlite-shm
+packages/server/data/exports/
+
+# secrets
+.env
