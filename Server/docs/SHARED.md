@@ -110,6 +110,7 @@ Server/packages/shared/
 |---|---|---|
 | `IdSchema` | whole number > 0 | `12` |
 | `CvDateSchema` | `YYYY`, `YYYY-MM` or `YYYY-MM-DD` | `2022`, `2022-03` |
+| `cvDateIsBefore(a, b)` | a small function, not a schema: is CV date `a` before `b`? Compares only as far as both go (`2022` vs `2022-05` = same year). Used by the schemas and the server's services, so the rule lives in one place. | |
 | `DayDateSchema` | `YYYY-MM-DD` only | `2026-10-10` |
 | `TimestampSchema` | UTC `YYYY-MM-DDTHH:MM:SSZ` | `2026-10-10T14:30:00Z` |
 | `SourceSchema` | `imported` / `manual` | |

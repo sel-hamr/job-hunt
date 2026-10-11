@@ -11,6 +11,13 @@ export const CvDateSchema = z
   .regex(/^\d{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?$/, "Use YYYY, YYYY-MM or YYYY-MM-DD");
 export type CvDate = z.infer<typeof CvDateSchema>;
 
+// Is CV date `a` before `b`? Compares only as far as both go,
+// so "2022" and "2022-05" count as the same year (not before).
+export function cvDateIsBefore(a: string, b: string): boolean {
+  const n = Math.min(a.length, b.length);
+  return a.slice(0, n) < b.slice(0, n);
+}
+
 // A full day only: "2026-10-10".
 export const DayDateSchema = z.iso.date();
 export type DayDate = z.infer<typeof DayDateSchema>;

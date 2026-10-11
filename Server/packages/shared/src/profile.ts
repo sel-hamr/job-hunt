@@ -3,6 +3,7 @@ import {
   CheckFieldsSchema,
   CountryCodeSchema,
   CvDateSchema,
+  cvDateIsBefore,
   HttpUrlSchema,
   IdSchema,
   LinkSchema,
@@ -54,14 +55,8 @@ const AT_LEAST_ONE = { message: "Send at least one field to change" };
 
 const countSet = (...ids: (number | null | undefined)[]) => ids.filter((id) => id != null).length;
 
-// CV dates can be "2022", "2022-03" or "2022-03-15". Compare only as far as both go,
-// so "2022" and "2022-05" count as the same year.
-const isBefore = (a: string, b: string) => {
-  const n = Math.min(a.length, b.length);
-  return a.slice(0, n) < b.slice(0, n);
-};
 const endNotBeforeStart = (v: { start_date?: string | null; end_date?: string | null }) =>
-  !v.start_date || !v.end_date || !isBefore(v.end_date, v.start_date);
+  !v.start_date || !v.end_date || !cvDateIsBefore(v.end_date, v.start_date);
 const END_NOT_BEFORE_START = { message: "end_date can't be before start_date", path: ["end_date"] };
 
 // --- Profile (always 1 row) ---
@@ -275,7 +270,7 @@ const certificateFields = {
   link: HttpUrlSchema.nullable(), // a link to check the certificate
 };
 const expiresNotBeforeDate = (v: { date?: string; expires?: string | null }) =>
-  !v.date || !v.expires || !isBefore(v.expires, v.date);
+  !v.date || !v.expires || !cvDateIsBefore(v.expires, v.date);
 const EXPIRES_NOT_BEFORE_DATE = { message: "expires can't be before date", path: ["expires"] };
 
 export const CertificateSchema = z
