@@ -27,3 +27,14 @@ export function toJson(value: unknown): string {
 export function orNull<T>(value: T | undefined): T | null {
   return value === undefined ? null : value;
 }
+
+// A value node:sqlite can save. (Only connection.ts imports node:sqlite, so we name it here.)
+export type SqlValue = string | number | null;
+
+// Any API value -> a value for SQLite: true/false -> 1/0, lists and objects -> JSON text.
+export function toSqlValue(value: unknown): SqlValue {
+  if (value === null) return null;
+  if (typeof value === "boolean") return fromBool(value);
+  if (typeof value === "string" || typeof value === "number") return value;
+  return toJson(value);
+}

@@ -1,6 +1,7 @@
 import type { Experience, ExperienceCreateInput, ExperienceUpdateInput, Source } from "@jobhunt/shared";
 import type { Db } from "../connection.ts";
-import { fromBool, now, orNull, toBool } from "../rows.ts";
+import { fromBool, orNull, toBool } from "../rows.ts";
+import { updateRow } from "./update.ts";
 
 // One row of the experiences table, as SQLite gives it back.
 type ExperienceRow = {
@@ -91,18 +92,7 @@ const columns = {
 // Changes only the fields that are sent, and sets updated_at.
 // It does not touch checked: the service decides that (see setItemChecked).
 export function updateExperience(db: Db, id: number, changes: ExperienceChanges): Experience | undefined {
-  const sets: string[] = ["updated_at = :updated_at"];
-  const values: Record<string, string | number | null> = { id, updated_at: now() };
-
-  for (const key of Object.keys(columns) as (keyof ExperienceChanges)[]) {
-    const value = changes[key];
-    if (value === undefined) continue;
-    sets.push(`${columns[key]} = :${key}`);
-    values[key] = typeof value === "boolean" ? fromBool(value) : value;
-  }
-
-  const result = db.prepare(`UPDATE experiences SET ${sets.join(", ")} WHERE id = :id`).run(values);
-  return result.changes === 0 ? undefined : getExperience(db, id);
+  return updateRow(db, "experiences", id, columns, changes) ? getExperience(db, id) : undefined;
 }
 
 // Its achievements and skill proofs are deleted too (ON DELETE CASCADE).
