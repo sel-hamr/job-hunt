@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Db } from "./connection.js";
+import type { Db } from "./connection.ts";
 
 const migrationsDir = path.join(import.meta.dirname, "migrations");
 
