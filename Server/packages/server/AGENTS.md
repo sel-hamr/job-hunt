@@ -28,7 +28,6 @@ Also follow the root `AGENTS.md`.
 - **No normal tool may set `checked = 1`.** Only a human's answer to an elicitation question (`review_items`) or the terminal review script can. When the AI edits a checked item, set `checked = 0`. See `docs/DATABASE.md`, part 12.
 - The API is synchronous, so keep each query small and fast. A slow query blocks the whole server.
 - The default database file is `data/jobs.sqlite`, and `DB_PATH` can change it. Never commit the file.
-- Tests use `:memory:` databases.
 
 ## Checklist: adding a new tool
 
@@ -37,5 +36,4 @@ Also follow the root `AGENTS.md`.
 3. Put the logic in a file in `src/services/`.
 4. Add the tool file in `src/tools/<topic>/`. It checks the input with the schema and calls the service.
 5. Register the tool in `src/tools/index.ts`.
-6. Add tests: a unit test for the service and repository, and an integration test over **both** stdio and HTTP.
-7. Write a clear tool description. The AI reads it to decide when to use the tool.
+6. Write a clear tool description. The AI reads it to decide when to use the tool.

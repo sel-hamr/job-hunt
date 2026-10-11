@@ -28,9 +28,9 @@ The most important product rule: **never invent facts.** Every fact in a CV or c
 
 ## Current status
 
-- **Planning phase.** The folders exist, and each one has a `README.md` that explains its job. There is no source code yet.
-- The root `package.json` still lists the old MCP SDK v1. It will become the npm workspaces root for both packages.
-- `src/mcp.ts` at the root is empty and old. Its job moves to `packages/server/src/index.ts`.
+- **Step 0 (setup) is done.** `Server/` is the npm workspaces root (`packages/*`), with TypeScript, `tsx` and shared settings in `tsconfig.base.json`.
+- `packages/server/src/index.ts` only prints `server starting` to stderr for now. Next: the database (`config/`, `db/connection.ts`, `db/migrate.ts`, `001_profile.sql`).
+- The old MCP SDK v1 is removed. SDK v2 is added to `packages/server` when we write the first tool.
 
 ## How to work here
 
@@ -64,10 +64,22 @@ The most important product rule: **never invent facts.** Every fact in a CV or c
 
 ## Tech
 
-- Node.js >= 24 (dev machine: 24.13), TypeScript, ESM (`"type": "module"`).
-- Validation: Zod (planned). Tests: Vitest (planned).
+- Node.js >= 24 (dev machine: 24.21), TypeScript, ESM (`"type": "module"`).
+- Validation: Zod v4.
+- The root `package.json` holds what every package uses: dev tools (`typescript`, `tsx`, `@types/node`) and `zod`. A dependency only one package uses goes in that package's `package.json`.
+- `@jobhunt/shared` lists `zod` as a **peer dependency** (see `docs/SHARED.md`). Keep one Zod version (`^4.6.5`) everywhere, the dashboard too.
+- No tests for now.
 - The dev machine runs Windows, and the path has a space (`Job Hunt`). Always quote paths.
 
 ## Commands
 
-None yet. When `package.json` scripts exist (build, test, dev, inspector), list them here.
+Run these from `Server/`:
+
+| Command | What it does |
+|---|---|
+| `npm install` | Installs everything and links the workspace packages. |
+| `npm run dev` | Runs the server with `tsx` and restarts it when you save a file. |
+| `npm run typecheck -w @jobhunt/server` | Checks the types. Prints nothing when there are no errors. |
+| `npm run build -w @jobhunt/server` | Builds `.js` files into `packages/server/dist/`. |
+
+Imports of your own files end in `.js` (for example `./db/connection.js`), because of `"module": "nodenext"`.
