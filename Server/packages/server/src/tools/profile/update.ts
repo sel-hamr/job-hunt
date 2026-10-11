@@ -12,11 +12,21 @@ export function registerProfileUpdate(
     "profile_update",
     {
       title: "Update my profile",
-      description:
-        "Save or change the main profile: name, headline, email, phone, city, country (2 letters, like MA), " +
-        "summary and links. Send only the fields to change. The first save needs a name. " +
-        "Any change makes the profile not checked. After saving, always show me the review link " +
-        "from the answer, so I can check the change.",
+      description: [
+        "Save or change my main profile: name, headline, email, phone, city,",
+        "country (2 letters, like MA), summary and links. Send only the fields",
+        "to change. The first save needs a name.",
+        "",
+        "Every change makes the profile NOT checked: it can't be used for job",
+        "matching or CVs until I confirm it. The answer contains a review link",
+        "(it ends with /review?type=profile).",
+        "",
+        "After a successful save, end your reply to me with:",
+        "1. a short list of what changed,",
+        "2. the review link exactly as given, as a clickable link, like:",
+        '   "Please review this change here: <link>".',
+        "Leave the review to me: only I check my facts, in my browser.",
+      ].join("\n"),
       inputSchema: ProfileUpdateInputSchema,
       outputSchema: ProfileSchema,
       annotations: { readOnlyHint: false, idempotentHint: true },
