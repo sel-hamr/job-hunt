@@ -3,7 +3,7 @@
 Everything about the shared data shapes. **This file is the source of truth for `@jobhunt/shared`.**
 If you add or change a shape, update this file in the same change.
 
-Status: building. `package.json`, `tsconfig.json`, `common.ts` and `index.ts` exist. The other files are still plans.
+Status: building. `common.ts` and `profile.ts` exist. The other files are still plans.
 
 ---
 
@@ -114,7 +114,8 @@ Server/packages/shared/
 | `TimestampSchema` | UTC `YYYY-MM-DDTHH:MM:SSZ` | `2026-10-10T14:30:00Z` |
 | `SourceSchema` | `imported` / `manual` | |
 | `CheckFieldsSchema` | `checked` (bool), `checked_at` (timestamp or `null`), `source` | added to every profile item |
-| `LinkSchema` | `{ label, url }`, `url` is a real `http(s)` link | `{ "label": "GitHub", "url": "https://..." }` |
+| `HttpUrlSchema` | a real `http(s)` link (`javascript:`, `file:` are refused) | `https://github.com/...` |
+| `LinkSchema` | `{ label, url }`, `url` is an `HttpUrl` | `{ "label": "GitHub", "url": "https://..." }` |
 | `CountryCodeSchema` | 2 capital letters | `MA` |
 | `CurrencyCodeSchema` | 3 capital letters | `MAD` |
 | `PageQuerySchema` | `limit` (1-100, default 20), `offset` (default 0) | |
@@ -149,23 +150,30 @@ Choice lists: `EXPERIENCE_TYPES`, `SKILL_CATEGORIES`, `SKILL_LEVELS`, `LANGUAGE_
 
 | Schema | Fields (every item also has `id`, the check fields and timestamps) |
 |---|---|
-| `ProfileSchema` | `name`, `headline`, `email`, `phone`, `city`, `country`, `summary`, `links` (list of `Link`), `checked` |
-| `ExperienceSchema` | `company`, `position`, `type`, `city`, `remote` (bool), `start_date`, `end_date` (`null` = now), `summary` |
+| `ProfileSchema` | `id` (always `1`), `name`, `headline`, `email`, `phone`, `city`, `country`, `summary`, `links` (list of `Link`), `checked`, `checked_at`, timestamps. No `source`. |
+| `ProfileUpdateInputSchema` | the profile fields, all optional, at least one (`PATCH /api/profile`) |
+| `ExperienceSchema` | `company`, `position`, `experience_type` (the database column `type`, see below), `city`, `remote` (bool), `start_date`, `end_date` (`null` = now), `summary` |
 | `AchievementSchema` | `experience_id` **or** `project_id` (exactly one), `text`, `number`, `position` |
 | `SkillSchema` | `name`, `other_names` (list), `category`, `level` |
-| `SkillProofSchema` | `skill_id` + exactly one of `experience_id` / `project_id` / `education_id` / `certificate_id` |
+| `SkillProofSchema` | `skill_id` + exactly one of `experience_id` / `project_id` / `education_id` / `certificate_id`. No update input: delete it and add a new one. |
 | `ProjectSchema` | `name`, `role`, `description`, `links`, `start_date`, `end_date` |
 | `EducationSchema` | `school`, `degree`, `field`, `start_date`, `end_date`, `grade` |
 | `CertificateSchema` | `name`, `issuer`, `date`, `expires`, `link` |
 | `LanguageSchema` | `language`, `level` |
 | `ProfileItemSchema` | a **discriminated union** on `type`: `{ type: "experience", ...Experience }`, `{ type: "skill", ...Skill }`, ... |
 | `ProfileItemCreateInputSchema` | the same union, with the create fields only |
-| `ProfileItemUpdateInputSchema` | the same union, every field optional |
-| `ProfileWithItemsSchema` | `profile` + one list per kind (answer of `GET /api/profile`) |
+| `ProfileItemUpdateInputSchema` | the same union (no `skill_proof`), every field optional, at least one. **No defaults**: Zod 4's `.partial()` fills in defaults, which would overwrite saved values. Achievement links can't change. |
+| `ProfileWithItemsSchema` | `profile` (`null` until first saved) + one list per kind (answer of `GET /api/profile`) |
 
 Shape checks that live **here** (they need only the item itself):
 - "exactly one of" links (achievement, skill proof),
-- `end_date` is not before `start_date`, when both are full enough to compare.
+- `end_date` is not before `start_date`, and a certificate's `expires` is not before its `date`. CV dates are compared only as far as both go, so `2022` and `2022-05` count as the same year. In an update, this only checks dates sent together; the service checks a new date against the saved one.
+
+**Every item has `type`** (`"experience"`, `"skill"`, ...): the saved shapes, the create inputs and the update inputs. So one list or one form can hold any kind, and Zod picks the right shape from `type`.
+
+**`experience_type`:** the `experiences` table has its own column named `type` (`full-time`, `intern`, ...), which would clash with the item `type`. In the API and the tools it is called `experience_type`. The repository maps `experience_type` ↔ the `type` column. This is the one exception to rule 4 (JSON names match the database).
+
+**Create inputs:** optional fields may be left out. The repository saves a missing field as `NULL` (or the database default, like `remote = 0`).
 
 ### `review.ts`
 

@@ -31,9 +31,13 @@ export const CheckFieldsSchema = z.object({
 });
 export type CheckFields = z.infer<typeof CheckFieldsSchema>;
 
+// Only http(s) links: "javascript:" or "file:" links are refused.
+export const HttpUrlSchema = z.url({ protocol: /^https?$/ });
+export type HttpUrl = z.infer<typeof HttpUrlSchema>;
+
 export const LinkSchema = z.object({
   label: z.string().trim().min(1),
-  url: z.url({ protocol: /^https?$/ }),
+  url: HttpUrlSchema,
 });
 export type Link = z.infer<typeof LinkSchema>;
 
