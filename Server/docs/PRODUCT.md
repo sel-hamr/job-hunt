@@ -24,7 +24,7 @@ Status: planning (decided on 2026-10-10). No code yet.
 | Match result | **A list per requirement**: must-have or nice-to-have, then Yes / Partly / No with proof, plus a short honest summary. |
 | Requirements | **Saved as rows.** I can fix them, re-run the match later, and see which skills I miss most often. |
 | Checked items | After the CV import, every item is `checked = no`. **Only items I marked `checked = yes` can be used as proof.** |
-| Who can check | **Only me.** Main way: the **Review page in the dashboard** (needs my login, which the AI never has). In Claude, the server can also ask me text questions (MCP elicitation) that the AI can't answer. Backup: a review script in the terminal. If the AI edits a checked item, it becomes not checked again. Details: [DATABASE.md](DATABASE.md), part 12. |
+| Who can check | **Only me**, on the **Review page in the dashboard** (needs my login, which the AI never has). In any AI app, `review_items` gives me the link. If the AI edits a checked item, it becomes not checked again. Details: [DATABASE.md](DATABASE.md), part 12. |
 | Portfolio | **Links + text** (GitHub, website). No files in version 1. |
 | Language | **English only** for now. |
 | History | **Keep every version** of each CV and letter, linked to the job, and mark which one I sent. **A saved document never changes.** A change creates a new version. |
@@ -268,7 +268,7 @@ Rules:
 
 Ready instructions that the AI app uses. They hold the writing rules: tell the truth, ATS style, 1-2 pages, English, sound human, and avoid banned phrases.
 
-- `import_cv`: read my old CV and save it as small pieces.
+- `import_cv`: read my CV and my portfolio site, and save everything with one `profile_import` call.
 - `analyze_job`: pull out the requirements and save them.
 - `check_match`: compare the requirements with my profile.
 - `tailor_cv`: write a CV for one job, with proofs.

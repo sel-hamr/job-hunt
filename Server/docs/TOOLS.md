@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: planning. No tools exist yet.
+Status: building. Step 1 (profile) is in progress: `profile_get` and `profile_update` first.
 
 ---
 
@@ -16,7 +16,7 @@ Status: planning. No tools exist yet.
 | Output | Structured output (with an `outputSchema`) **plus** a short text summary for the AI. |
 | Errors | A rejected save returns a **list of all problems** at once, so the AI can fix them all in one try. Example: `Number "5 years" has no claim. Skill "Kubernetes" is not in your checked profile.` |
 | Hints | Read-only tools are marked `readOnlyHint`. Delete tools are marked `destructiveHint`, so the AI app can ask me first. |
-| `checked` | **No tool sets `checked = 1`**, except `review_items` with my own answer. A tool that edits a checked item sets it back to `checked = 0`. |
+| `checked` | **No tool sets `checked = 1`.** Only the dashboard's Review page, with my login, can (see `DATABASE.md`, part 12). A tool that edits a checked item sets it back to `checked = 0`. |
 | Descriptions | Each tool has a clear description: what it does, when to use it, and when **not** to use it. The AI reads it to pick the right tool. |
 | Step | Each tool is built in the build step shown (see `PRODUCT.md`). |
 
@@ -34,15 +34,49 @@ The input schema changes with the `type`, so each kind is still checked correctl
 |---|---|---|---|
 | `profile_get` | Read my whole profile. Read-only. | `only_checked` (yes/no, default no) | Profile + all items, each with `checked`. Skills include **years** (counted from proofs). |
 | `profile_update` | Change the main profile row (name, headline, contact, summary, links). | The fields to change | The new profile. `checked` becomes `0` if it was `1`. |
+| `profile_import` | **First setup from my CV and portfolio**, in one call and one transaction (all or nothing). Only works when the profile is **empty** (no profile row and no items). | The whole profile, nested (see below) | Counts per kind, the new `id` for each `ref`, and how many items are not checked yet |
 | `profile_item_add` | Add one item. | `type` (`experience` / `achievement` / `skill` / `skill_proof` / `project` / `education` / `certificate` / `language`), `source` (`imported` / `manual`), the item fields | New item with `id`, `checked = 0` |
 | `profile_item_update` | Change one item. | `type`, `id`, the fields to change | Changed item. `checked` becomes `0`. |
 | `profile_item_delete` | Delete one item. Destructive. | `type`, `id` | What was deleted, **including proofs removed with it**, and which jobs to re-match. |
-| `review_items` | **The human check.** The server asks me text questions (MCP elicitation): Yes / No / Fix. | `type` (optional, or all kinds), `limit` (default 5 items per round) | How many I checked, fixed or skipped, and how many are still not checked. |
+| `review_items` | **Starts the human check.** Read-only: it checks nothing itself. | `type` (optional) | How many items are not checked yet, per kind, and the link to the dashboard's Review page (for example `http://localhost:3000/review`). |
 
 `review_items` notes:
-- It works for profile items **and** company notes.
-- If the AI app doesn't support elicitation, it answers: "This app can't ask you directly. Please run the review script."
-- **The review script** (`scripts/`) asks the same questions in a terminal. It's a script, not an MCP tool.
+- It works for profile items **and** company notes (later).
+- I open the link, log in, and check, fix or skip each item in my browser. My answers go from the browser to `/api/review/*` with my login session, never through the AI. See `DATABASE.md`, part 12.
+- It works in every MCP app, because it only returns text and a link.
+
+### `profile_import` input
+
+Nested, like a CV. Nothing has an `id` yet, so items get a short `ref` name that Claude makes up, and skills point to items by `ref`:
+
+```json
+{
+  "profile": { "name": "Sel", "headline": "Backend Developer",
+               "links": [{ "label": "Portfolio", "url": "https://..." }] },
+  "experiences": [
+    { "ref": "acme", "company": "Acme", "position": "Backend Developer",
+      "experience_type": "full-time", "start_date": "2022-03",
+      "achievements": [{ "text": "Made the API 40% faster", "number": "40%" }] }
+  ],
+  "projects": [
+    { "ref": "jobhunt", "name": "Job Hunt", "links": [{ "label": "GitHub", "url": "https://..." }],
+      "achievements": [] }
+  ],
+  "education": [{ "ref": "school", "school": "1337", "degree": "Software engineering" }],
+  "certificates": [{ "ref": "aws", "name": "AWS Cloud", "issuer": "Amazon", "date": "2024-05" }],
+  "skills": [
+    { "name": "Node.js", "category": "framework", "level": "good", "proven_by": ["acme", "jobhunt"] }
+  ],
+  "languages": [{ "language": "English", "level": "B2" }]
+}
+```
+
+Rules:
+- `ref` is optional, and only needed when a skill points to the item. `ref` works on experiences, projects, education and certificates.
+- An achievement's order (`position`) comes from its place in the list.
+- Everything is saved with `source = imported` and `checked = 0`.
+- Refused with **all problems listed at once**: a profile that is not empty, two items with the same `ref`, a `proven_by` with an unknown `ref`, two skills or two languages with the same name (upper/lower case ignored), and every normal shape rule (`docs/SHARED.md`).
+- The input shape is `ProfileImportInputSchema` in `@jobhunt/shared`.
 
 ---
 
@@ -140,7 +174,7 @@ Each prompt holds the writing rules and tells the AI which tools to use, in whic
 
 | Prompt | Input | What the AI does | Step |
 |---|---|---|---|
-| `import_cv` | `cv_text` | Reads my old CV → saves everything with `profile_update` / `profile_item_add` (`source = imported`) → tells me to run `review_items`. | 1 |
+| `import_cv` | `cv_text`, `portfolio_url` (optional) | Reads my CV, and opens my portfolio site with its own web tool (if it can't, asks me to paste the page text) → merges items found in both → adds the portfolio to `profile.links` as `Portfolio` → fills required fields the CV doesn't state (skill `level`, `experience_type`) with its **best guess** → calls `profile_import` **once** → tells me what was saved, **lists every guess**, and asks me to run `review_items`. Guesses are safe only because nothing is checked until I review it. | 1 |
 | `analyze_job` | `job_id` | Pulls out every requirement with its **exact quote** → `requirements_set`. If it's not clear, it chooses must-have. | 2 |
 | `check_match` | `job_id` | `profile_get` (checked only) → compares each requirement → `match_save` → shows me the list and the fit label. | 2 |
 | `tailor_cv` | `job_id` | Writes a CV (1-2 pages, ATS-friendly, English, sounds human, no gaps added) **with claims** → `document_save` → fixes the problems if rejected → `ats_check`. | 4 |

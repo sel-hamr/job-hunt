@@ -499,45 +499,32 @@ Some rules need to look at other tables, so the **services** check them before s
 
 The AI calls every MCP tool. If a normal tool could set `checked = 1`, the AI could check items by mistake, and the lie guard would mean nothing.
 
-### The decision: only places the AI can't reach can check
+### The decision: only my browser, with my login, can check
 
-**Main way: the dashboard's Review page.**
+**The only way: the dashboard's Review page.**
 
-The dashboard (`Job Hunt/FrontEnd/`) calls `POST /api/review/check` or `POST /api/review/fix` with my **login session**. The AI apps use `/mcp` and never have a session, so they can't call these addresses. See `docs/API.md`, part 5.
+1. In any AI app, the AI calls `review_items`. It answers with how many items wait, and a link: `http://localhost:3000/review`.
+2. I open the link and log in. I see each item as text, grouped (for example one job with its achievements).
+3. For each item I click **Yes** (check), **Fix** (change the text, then check), or skip.
+4. The dashboard calls `POST /api/review/check` or `POST /api/review/fix` with my **login session**. The AI apps use `/mcp` and never have a session, so they can't call these addresses. See `docs/API.md`, part 5.
 
-**Second way: MCP elicitation (form mode)**, when I'm working inside Claude:
+Why this way (decided 2026-10-11):
 
-1. The AI calls the tool `review_items` (for example, "review my imported jobs").
-2. The **server** sends me a text question through the AI app. Example:
-
-   ```
-   Is this correct?
-   Backend Developer @ Acme, 2022-03 -> now, full-time, Rabat
-   - Made the API 40% faster
-
-   Answer: [Yes] [No] [Fix: ______]
-   ```
-
-3. **My answer goes straight to the server.** The AI does not answer it.
-   - **Yes** → the server sets `checked = 1`.
-   - **Fix** → the server saves my text change, and the item stays checked, because a human made it.
-   - **No** or **cancel** → nothing changes.
-4. The server asks about a few items at a time (for example, one job with its achievements), so it isn't slow.
-
-**Third way (backup): a review script in the terminal** (`packages/server/scripts/`).
-Same questions, same answers, but in a terminal window, with no AI at all.
-Use it when the AI app doesn't support elicitation.
+| Option | Works in every MCP app? | Can the AI fake my answer? |
+|---|---|---|
+| MCP elicitation (the server asks me inside the app) | **No.** Claude Code supports it; Claude Desktop (October 2026) claims to, but never shows the question and the call hangs | No |
+| I answer in the chat | Yes | **Yes**: the AI carries my answer to the server |
+| A review script in the terminal | Yes | **Yes** in Claude Code: it can run the script and type `y` |
+| **The Review page, with my password** | **Yes**: `review_items` only returns text and a link | **No**: the AI doesn't know my password |
 
 ### Rules
 
-1. **Only the dashboard's review addresses, answers to elicitation questions, or the review script can set `checked = 1`.** No normal tool can.
+1. **Only the dashboard's review addresses (with my login session) can set `checked = 1`.** No MCP tool can, `review_items` included.
 2. **When an item is edited** with a normal tool or a normal profile address (`PATCH /api/profile/items/...`), it becomes `checked = 0` again.
-3. **When I fix an item** through `POST /api/review/fix`, an elicitation answer or the review script, it stays checked.
+3. **When I fix an item** through `POST /api/review/fix`, it stays checked, because I made the change.
 4. **A checked item that is used as a proof can be deleted.** Its proofs are deleted with it (foreign keys with `ON DELETE CASCADE`). Then I re-run the match.
 5. Every profile item also saves `checked_at` (when it was checked).
 
-### Things to confirm when we build
+### The honest limit
 
-- **App support:** I couldn't confirm that Claude Desktop supports elicitation yet. On first connect, the server sees whether the app declared the `elicitation` capability. If it didn't, `review_items` answers: "This app can't ask you directly. Please run the review script."
-- **HTTP mode:** SDK v2 HTTP is stateless (one request at a time). Check the SDK v2 docs to confirm that elicitation works inside a tool call in this mode.
-- **Never** use elicitation to ask for passwords or tokens. The MCP spec forbids it in form mode.
+No design is safe against an AI that controls my computer. If I let a browser agent (like Claude in Chrome) use my logged-in browser, it could click Yes. So: **I review myself, and never ask an AI to review for me.** The design still blocks the normal risks: tool calls, mistakes, and hidden instructions in a CV, a website or a job post.
