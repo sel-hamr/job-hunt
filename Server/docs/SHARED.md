@@ -165,6 +165,7 @@ Choice lists: `EXPERIENCE_TYPES`, `SKILL_CATEGORIES`, `SKILL_LEVELS`, `LANGUAGE_
 | `ProfileItemCreateInputSchema` | the same union, with the create fields only |
 | `ProfileItemUpdateInputSchema` | the same union (no `skill_proof`), every field optional, at least one. **No defaults**: Zod 4's `.partial()` fills in defaults, which would overwrite saved values. Achievement links can't change. |
 | `ProfileWithItemsSchema` | `profile` (`null` until first saved) + one list per kind (answer of `GET /api/profile`) |
+| `ProfileImportInputSchema` (planned) | the input of `profile_import`: the profile + nested items with `ref` names and `proven_by` (see `TOOLS.md`, "`profile_import` input"). Checks inside the payload: unique `ref`s, known `proven_by` refs, no duplicate skill or language names. |
 
 Shape checks that live **here** (they need only the item itself):
 - "exactly one of" links (achievement, skill proof),
