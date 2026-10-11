@@ -3,7 +3,7 @@
 Everything about the database. **This file is the source of truth for tables and columns.**
 If you change the database, update this file in the same change.
 
-Status: planning. No migrations exist yet.
+Status: building. `001_profile.sql` (part 5) exists. The other parts are still plans.
 
 ---
 
@@ -15,7 +15,6 @@ Status: planning. No migrations exist yet.
 | File | `packages/server/data/jobs.sqlite`. Change it with the `DB_PATH` setting. **Never commit it** (personal data). |
 | Who opens it | **Only the server**, and only in `packages/server/src/db/connection.ts`. The agent never opens it. |
 | Open how many times | **Once** at server start. The same connection is used for every request. |
-| Tests | Use an in-memory database (`:memory:`). |
 
 ### Settings set when the database opens
 
@@ -51,12 +50,12 @@ Status: planning. No migrations exist yet.
 | Column names | `snake_case`: `start_date`, `company_id`. |
 | `STRICT` tables | Every table is `STRICT`, so SQLite refuses the wrong data type. |
 | `id` | Every table has `id INTEGER PRIMARY KEY` (a number given automatically). |
-| `created_at`, `updated_at` | Every table has both. Format: `YYYY-MM-DDTHH:MM:SSZ` in UTC, e.g. `2026-10-10T14:30:00Z`. |
+| `created_at`, `updated_at` | Every table has both. Format: `YYYY-MM-DDTHH:MM:SSZ` in UTC, e.g. `2026-10-10T14:30:00Z`. Both default to now. SQLite does **not** change `updated_at` by itself: the repository sets it on every update. |
 | Yes / no | SQLite has no true/false type. We use `INTEGER` with `0` = no and `1` = yes. |
 | Fixed choices | Columns with fixed choices (like `type`) use a `CHECK` with the list of allowed values. |
 | Small lists | Short lists (links, keywords, other names) are saved as **JSON text**, e.g. `["Node","NodeJS"]`. SQLite can read them with `json_each`. |
 | Links between tables | Real foreign keys (`..._id` columns). Every foreign key column has an index. |
-| CV dates | Text: `YYYY`, `YYYY-MM` or `YYYY-MM-DD`, because CVs often show only the year or the month. An empty `end_date` means **now**. |
+| CV dates | Text: `YYYY`, `YYYY-MM` or `YYYY-MM-DD`, because CVs often show only the year or the month. An empty `end_date` means **now**. The format is checked in the code (Zod), not in the database. |
 | Money | Whole numbers (`INTEGER`) plus a 3-letter currency code (`MAD`, `EUR`, `USD`). |
 
 ### "One of many" links (proofs)
@@ -109,9 +108,11 @@ Every profile table (except `profile`) also has these columns:
 
 | Column | Type | Rule |
 |---|---|---|
-| `source` | TEXT | `imported` (from my CV) or `manual` (added by me) |
+| `source` | TEXT | `imported` (from my CV) or `manual` (added by me). Required, no default: the code always says which. |
 | `checked` | INTEGER | `0` = not checked, `1` = checked. Default `0`. **Only checked items can be proofs.** Only a human can set it to `1` (see part 12). |
 | `checked_at` | TEXT | When it was checked. Empty when not checked. |
+
+A `CHECK` keeps `checked` and `checked_at` together: `checked = 1` needs a `checked_at`, and `checked = 0` needs it empty. This is true for `profile` too.
 
 ### `profile` (always exactly 1 row)
 
@@ -127,6 +128,7 @@ Every profile table (except `profile`) also has these columns:
 | `summary` | TEXT | no | 2-3 lines about me |
 | `links` | TEXT (JSON) | no | e.g. `[{"label":"GitHub","url":"..."}]` |
 | `checked` | INTEGER | yes | default `0` |
+| `checked_at` | TEXT | no | When it was checked. |
 
 ### `experiences` (my jobs)
 
@@ -177,6 +179,8 @@ Every profile table (except `profile`) also has these columns:
 
 - Exactly one of the four item columns is filled.
 - If the skill or the item is deleted, the proof is deleted too.
+- No duplicates: the same item can't prove the same skill twice. One unique index per kind (for example `(experience_id, skill_id)`) does this, and it also makes lookups fast.
+- Like every profile table, it has `source`, `checked` and `checked_at`: the link itself ("this job proves this skill") is a fact I check.
 
 ### `projects` (portfolio)
 
