@@ -1,6 +1,6 @@
-import { loadConfig, type Config } from "./config/index.js";
-import { openDb } from "./db/connection.js";
-import { migrate } from "./db/migrate.js";
+import { loadConfig, type Config } from "./config/index.ts";
+import { openDb } from "./db/connection.ts";
+import { migrate } from "./db/migrate.ts";
 
 let config: Config;
 try {

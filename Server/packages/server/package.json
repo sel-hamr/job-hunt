@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "dev": "node --watch --env-file-if-exists=.env src/index.ts",
+    "typecheck": "tsc",
+    "start": "node --env-file-if-exists=.env src/index.ts"
   }
 }

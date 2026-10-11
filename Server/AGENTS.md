@@ -28,9 +28,9 @@ The most important product rule: **never invent facts.** Every fact in a CV or c
 
 ## Current status
 
-- **Step 0 (setup) is done.** `Server/` is the npm workspaces root (`packages/*`), with TypeScript, `tsx` and shared settings in `tsconfig.base.json`.
-- `packages/server/src/index.ts` only prints `server starting` to stderr for now. Next: the database (`config/`, `db/connection.ts`, `db/migrate.ts`, `001_profile.sql`).
-- The old MCP SDK v1 is removed. SDK v2 is added to `packages/server` when we write the first tool.
+- **Step 0 (setup) and the database base are done.** `src/index.ts` reads the config, opens the database and runs the migrations (`001_profile.sql`).
+- **Now: step 2 (profile).** `@jobhunt/shared` exists with `common.ts`. Next: the profile shapes, then the repository, the service and the first MCP tool.
+- MCP SDK v2 is added to `packages/server` when we write the first tool.
 
 ## How to work here
 
@@ -66,9 +66,12 @@ The most important product rule: **never invent facts.** Every fact in a CV or c
 
 - Node.js >= 24 (dev machine: 24.21), TypeScript, ESM (`"type": "module"`).
 - Validation: Zod v4.
-- The root `package.json` holds what every package uses: dev tools (`typescript`, `tsx`, `@types/node`) and `zod`. A dependency only one package uses goes in that package's `package.json`.
+- The root `package.json` holds what every package uses: dev tools (`typescript`, `@types/node`) and `zod`. A dependency only one package uses goes in that package's `package.json`.
 - `@jobhunt/shared` lists `zod` as a **peer dependency** (see `docs/SHARED.md`). Keep one Zod version (`^4.6.5`) everywhere, the dashboard too.
 - No tests for now.
+- **No build step.** Node 24 runs the `.ts` files directly (type stripping), in dev and in Claude Desktop. `tsc` only checks types (`noEmit`).
+- **Imports end in `.ts`**, the real file name: `import { openDb } from "./db/connection.ts"`. A `.js` ending passes the type check but crashes when Node runs.
+- **Only erasable TypeScript** (`erasableSyntaxOnly`): no `enum`, no `namespace`, no constructor parameter properties. Use `as const` objects or unions instead of `enum`.
 - The dev machine runs Windows, and the path has a space (`Job Hunt`). Always quote paths.
 
 ## Commands
@@ -78,8 +81,8 @@ Run these from `Server/`:
 | Command | What it does |
 |---|---|
 | `npm install` | Installs everything and links the workspace packages. |
-| `npm run dev` | Runs the server with `tsx` and restarts it when you save a file. |
-| `npm run typecheck -w @jobhunt/server` | Checks the types. Prints nothing when there are no errors. |
-| `npm run build -w @jobhunt/server` | Builds `.js` files into `packages/server/dist/`. |
+| `npm run dev` | Runs the server with `node --watch` and restarts it when you save a file. Reads `packages/server/.env`. |
+| `npm start` | Runs the server once, the same way Claude Desktop will. |
+| `npm run typecheck` | Checks the types in every package. Prints nothing when there are no errors. |
 
-Imports of your own files end in `.js` (for example `./db/connection.js`), because of `"module": "nodenext"`.
+Claude Desktop runs `node <full path>/Server/packages/server/src/index.ts` and passes settings in its own `env` block.

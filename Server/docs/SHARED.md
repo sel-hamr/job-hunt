@@ -3,7 +3,7 @@
 Everything about the shared data shapes. **This file is the source of truth for `@jobhunt/shared`.**
 If you add or change a shape, update this file in the same change.
 
-Status: planning. No code yet.
+Status: building. `package.json`, `tsconfig.json`, `common.ts` and `index.ts` exist. The other files are still plans.
 
 ---
 
@@ -82,7 +82,10 @@ Server/packages/shared/
 - **No build step.** The package ships its TypeScript source (`src/index.ts`).
 - **Dashboard:** `"@jobhunt/shared": "file:../Server/packages/shared"` in `FrontEnd/package.json`, and `transpilePackages: ["@jobhunt/shared"]` in `next.config.ts`, so Next.js compiles it.
 - **Server:** it's a package in the `Server/` npm workspace, so the server imports `@jobhunt/shared` like any package.
-- **To confirm when we build the server:** how the server runs TypeScript from another package (a `tsc` build with project references, or Node 24's type stripping). Decide it in step 1, then write the answer here.
+- **Decided (2026-10-11): Node 24 type stripping, no build.** The server runs its `.ts` files and this package's `.ts` files directly with `node`. Tested: `node --watch` (dev), plain `node` started from another folder (like Claude Desktop), and the type check.
+- **Imports inside this package end in `.ts`** (`export * from "./common.ts"`). Node does not rename `.js` to `.ts`, so a `.js` ending crashes at run time.
+- **Only erasable TypeScript** (no `enum`, no `namespace`): Node can only strip types, not change code. `tsconfig.base.json` sets `erasableSyntaxOnly` to catch it.
+- **Dashboard:** its `tsconfig.json` needs `"allowImportingTsExtensions": true` (allowed there because it has `noEmit`). Tested with TypeScript 5.
 
 ---
 

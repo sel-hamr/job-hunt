@@ -5,6 +5,9 @@
     "moduleResolution": "nodenext",
     "strict": true,
     "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "types": ["node"]
   }

@@ -6,11 +6,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w @jobhunt/server"
+    "dev": "npm run dev -w @jobhunt/server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "start": "npm start -w @jobhunt/server"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
-    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "dependencies": {
