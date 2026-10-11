@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Step 1 (profile) is in progress: `profile_get` and `profile_update` first.
+Status: building. Done: `profile_get`, `profile_update`. Next: `profile_import`, then `import_cv` (see `AGENTS.md`, "Current status").
 
 ---
 

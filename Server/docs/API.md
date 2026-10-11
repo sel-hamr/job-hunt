@@ -3,7 +3,7 @@
 Every address of the server's admin API. **This file is the source of truth for the admin API.**
 If you add or change an address, update this file in the same change.
 
-Status: planning. No code yet.
+Status: planning. No address exists yet: the HTTP door is step 3 in `AGENTS.md`, "Current status".
 
 Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **server side**. The AI apps use `/mcp`, never `/api`.
 

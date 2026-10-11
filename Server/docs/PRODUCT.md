@@ -1,6 +1,6 @@
 # Product plan: Job Hunt MCP
 
-Status: planning (decided on 2026-10-10). No code yet.
+Status: building step 1 (Profile). Progress and next steps: `AGENTS.md`, "Current status".
 
 ## The idea
 

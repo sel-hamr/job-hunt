@@ -28,9 +28,30 @@ The most important product rule: **never invent facts.** Every fact in a CV or c
 
 ## Current status
 
-- **Step 0 (setup) and the database base are done.** `src/index.ts` reads the config, opens the database and runs the migrations (`001_profile.sql`).
-- **Now: step 2 (profile).** `@jobhunt/shared` exists with `common.ts`. Next: the profile shapes, then the repository, the service and the first MCP tool.
-- MCP SDK v2 is added to `packages/server` when we write the first tool.
+**This list is the source of truth for progress.** Update it in the same PR that finishes a step.
+Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1: Profile**.
+
+### Done (2026-10-11)
+
+- Setup: npm workspaces, TypeScript, Node runs `.ts` directly (no build step), Zod.
+- Database: config (`DB_PATH`, `DASHBOARD_URL`), `connection.ts`, `migrate.ts`, `001_profile.sql` (9 profile tables).
+- `@jobhunt/shared`: `common.ts`, `profile.ts` (all profile shapes).
+- Repositories for the profile and all 8 item kinds; `services/profile.ts` (edit = not checked, clear errors, date and duplicate rules).
+- MCP over stdio (SDK v2): `profile_get`, `profile_update` (answers with the review link). Works in Claude Desktop.
+
+### Next, in this order
+
+1. **`profile_import`**: `ProfileImportInputSchema` in `shared` → import service (one transaction, empty profile only, all problems listed at once) → tool. Plan: `docs/TOOLS.md`, "`profile_import` input".
+2. **`import_cv` prompt**: CV + portfolio site → merge → guess missing required fields and list the guesses → `profile_import` once.
+3. **HTTP door** (`transports/http.ts`): `/mcp` with the MCP token, `/api`, `/health`, `Host` / `Origin` checks, `127.0.0.1` only.
+4. **Login**: `users` and `sessions` tables (migration `002`), the create-user script, `/api/auth/*`. Plan: `docs/DATABASE.md` part 7c, `docs/API.md`.
+5. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
+6. **Dashboard** (`FrontEnd/`): login page and the **Review page** first, then Home and Profile.
+7. **`review_items`** tool: count + link to the Review page.
+8. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
+9. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
+
+After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 
 ## How to work here
 
