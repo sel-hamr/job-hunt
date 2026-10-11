@@ -1,6 +1,6 @@
 # shared/src
 
-One file per topic. `common.ts` and `index.ts` exist; the others are still plans. The fields of each shape: `docs/SHARED.md`, part 7.
+One file per topic. `common.ts`, `profile.ts` and `index.ts` exist; the others are still plans. The fields of each shape: `docs/SHARED.md`, part 7.
 
 | File | Shapes |
 |---|---|
