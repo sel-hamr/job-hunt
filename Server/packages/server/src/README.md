@@ -1,6 +1,6 @@
 # server/src
 
-Two main files live here (`index.ts` exists, `server.ts` not yet):
+Two main files live here:
 
 | File | Easy meaning |
 |---|---|

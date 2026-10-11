@@ -1,6 +1,7 @@
 import { loadConfig, type Config } from "./config/index.ts";
 import { openDb } from "./db/connection.ts";
 import { migrate } from "./db/migrate.ts";
+import { startStdio } from "./transports/stdio.ts";
 
 let config: Config;
 try {
@@ -22,8 +23,12 @@ try {
   process.exit(1);
 }
 
-// Close the database when the server stops (Ctrl+C, or the app closes it).
-function shutdown() {
+const stdio = startStdio({ db, dashboardUrl: config.dashboardUrl });
+console.error("job-hunt MCP server ready on stdio");
+
+// Close the connection, then the database, when the server stops (Ctrl+C, or the app closes it).
+async function shutdown() {
+  await stdio.close();
   db.close();
   console.error("database closed");
   process.exit(0);
