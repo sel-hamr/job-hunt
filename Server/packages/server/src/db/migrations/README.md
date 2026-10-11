@@ -1,11 +1,14 @@
 # db/migrations
 
-SQL files that create or change tables. Numbered, run in order:
+SQL files that create or change tables. Numbered, run in order by `../migrate.ts`:
 
-- `001_create_jobs.sql`
-- `002_create_applications.sql`
+- `001_profile.sql`
+- `002_jobs.sql`
 - ...
 
 Rules:
-- Never edit an old file. Add a new file instead.
+- Name: 3 digits, `_`, a short name, `.sql`. Other files (like this README) are ignored.
+- Each file runs inside a transaction: all of it works, or none of it does.
 - The database remembers the last number it ran (`PRAGMA user_version`).
+- Never edit an old file. Add a new file instead.
+- Don't write `BEGIN` or `COMMIT` in a file. `migrate.ts` does that.
