@@ -480,7 +480,9 @@ Some rules need to look at other tables, so the **services** check them before s
 5. A saved document never changes. Changes create a new version.
 6. Document checks: claim, proof, number and skill checks reject. Banned phrases only warn (see part 8).
 7. Only a human can set `checked = 1` (see part 12).
+   A normal edit sets `checked = 0` again, in the same transaction as the edit.
 8. Every `/api` request needs a valid, not expired session (see part 7c), except login.
+9. When only checked facts are used (matching, CVs): an achievement counts only if its job or project is checked too, and a skill proof only if its skill and its item are checked too.
 
 ---
 
