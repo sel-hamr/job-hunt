@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Step 1 (profile) is in progress: `profile_get` and `profile_update` first.
+Status: building. Done: `profile_get`, `profile_update`. Next: `profile_import`, then `import_cv` (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -17,6 +17,7 @@ Status: building. Step 1 (profile) is in progress: `profile_get` and `profile_up
 | Errors | A rejected save returns a **list of all problems** at once, so the AI can fix them all in one try. Example: `Number "5 years" has no claim. Skill "Kubernetes" is not in your checked profile.` |
 | Hints | Read-only tools are marked `readOnlyHint`. Delete tools are marked `destructiveHint`, so the AI app can ask me first. |
 | `checked` | **No tool sets `checked = 1`.** Only the dashboard's Review page, with my login, can (see `DATABASE.md`, part 12). A tool that edits a checked item sets it back to `checked = 0`. |
+| Review link | **Every tool that changes profile data answers with the review link for that item** (`<DASHBOARD_URL>/review?type=<type>&id=<id>`, or `?type=profile`), and its description tells the AI to always show me the link. `review_items` gives the link to everything that waits. |
 | Descriptions | Each tool has a clear description: what it does, when to use it, and when **not** to use it. The AI reads it to pick the right tool. |
 | Step | Each tool is built in the build step shown (see `PRODUCT.md`). |
 
@@ -33,7 +34,7 @@ The input schema changes with the `type`, so each kind is still checked correctl
 | Tool | What it does | Input | Output |
 |---|---|---|---|
 | `profile_get` | Read my whole profile. Read-only. | `only_checked` (yes/no, default no) | Profile + all items, each with `checked`. Skills include **years** (counted from proofs). |
-| `profile_update` | Change the main profile row (name, headline, contact, summary, links). | The fields to change | The new profile. `checked` becomes `0` if it was `1`. |
+| `profile_update` | Save or change the main profile row (name, headline, contact, summary, links). The first save needs a `name`. | The fields to change | The profile, `checked = 0`, and the review link (`/review?type=profile`). |
 | `profile_import` | **First setup from my CV and portfolio**, in one call and one transaction (all or nothing). Only works when the profile is **empty** (no profile row and no items). | The whole profile, nested (see below) | Counts per kind, the new `id` for each `ref`, and how many items are not checked yet |
 | `profile_item_add` | Add one item. | `type` (`experience` / `achievement` / `skill` / `skill_proof` / `project` / `education` / `certificate` / `language`), `source` (`imported` / `manual`), the item fields | New item with `id`, `checked = 0` |
 | `profile_item_update` | Change one item. | `type`, `id`, the fields to change | Changed item. `checked` becomes `0`. |

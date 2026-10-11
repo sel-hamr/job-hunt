@@ -7,5 +7,9 @@
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "typecheck": "tsc",
     "start": "node --env-file-if-exists=.env src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/node": "^2.1.1",
+    "@modelcontextprotocol/server": "^2.3.1"
   }
 }
