@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "npm run dev -w @jobhunt/server",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "start": "npm start -w @jobhunt/server"
+    "start": "npm start -w @jobhunt/server",
+    "reset-profile": "npm run reset-profile -w @jobhunt/server",
+    "show-profile": "npm run show-profile -w @jobhunt/server --"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

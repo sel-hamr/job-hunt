@@ -165,7 +165,10 @@ Choice lists: `EXPERIENCE_TYPES`, `SKILL_CATEGORIES`, `SKILL_LEVELS`, `LANGUAGE_
 | `ProfileItemCreateInputSchema` | the same union, with the create fields only |
 | `ProfileItemUpdateInputSchema` | the same union (no `skill_proof`), every field optional, at least one. **No defaults**: Zod 4's `.partial()` fills in defaults, which would overwrite saved values. Achievement links can't change. |
 | `ProfileWithItemsSchema` | `profile` (`null` until first saved) + one list per kind (answer of `GET /api/profile`) |
-| `ProfileImportInputSchema` (planned) | the input of `profile_import`: the profile + nested items with `ref` names and `proven_by` (see `TOOLS.md`, "`profile_import` input"). Checks inside the payload: unique `ref`s, known `proven_by` refs, no duplicate skill or language names. |
+| `ProfileImportInputSchema` | the input of `profile_import`: the profile + nested items with `ref` names and `proven_by` (see `TOOLS.md`, "`profile_import` input"). Checks inside the payload: unique `ref`s, known `proven_by` refs, no duplicate skill or language names. |
+| `ProfileImportResultSchema` | the answer of `profile_import`: `counts` (one count per item kind), `ids` (`ref` → new id), `not_checked`. The tool adds `review_link`. |
+| `ProfileResetInputSchema` | the input of `profile_reset`: `confirm`, exactly `PROFILE_RESET_CONFIRM` (`"DELETE MY PROFILE"`) |
+| `ProfileResetResultSchema` | the answer of `profile_reset`: `deleted` (whether there was a profile row, and one count per item kind) |
 
 Shape checks that live **here** (they need only the item itself):
 - "exactly one of" links (achievement, skill proof),
