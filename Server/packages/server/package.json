@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "typecheck": "tsc",
-    "start": "node --env-file-if-exists=.env src/index.ts"
+    "start": "node --env-file-if-exists=.env src/index.ts",
+    "reset-profile": "node --env-file-if-exists=.env scripts/reset-profile.ts",
+    "show-profile": "node --env-file-if-exists=.env scripts/show-profile.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/node": "^2.1.1",
