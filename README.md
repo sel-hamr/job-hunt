@@ -80,6 +80,12 @@ There are no run commands for the server or the extension yet. They will be list
 
 Needs **Node.js 24 or newer** (for `node:sqlite`).
 
+Install the dependencies of every part (`Server/`, `FrontEnd/`, `Extension/`) with one command, from the repo root:
+
+```bash
+npm run setup
+```
+
 The dashboard scaffold can already run:
 
 ```bash
