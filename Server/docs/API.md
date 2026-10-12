@@ -64,7 +64,7 @@ Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **serve
 | `POST /api/review/check` | **Set `checked = 1`** (and `checked_at`). | `items`: a list of `{ type, id }` | The checked items |
 | `POST /api/review/fix` | Fix an item **and** check it (a fix by me stays checked). | `type`, `id`, the fields to change | The fixed, checked item |
 
-This is the **only** way to set `checked = 1`. The MCP tool `review_items` only sends me here with a link. See `DATABASE.md`, part 12.
+This is the **only** way to set `checked = 1`. The MCP tools only send me here with their `review_link`. See `DATABASE.md`, part 12.
 
 ---
 

@@ -503,7 +503,7 @@ The AI calls every MCP tool. If a normal tool could set `checked = 1`, the AI co
 
 **The only way: the dashboard's Review page.**
 
-1. In any AI app, the AI calls `review_items`. It answers with how many items wait, and a link: `http://localhost:3000/review`.
+1. In any AI app, the tool that saved the change answers with a `review_link`, and the AI shows it to me: for example `http://localhost:3000/review`. The Review page lists everything that waits.
 2. I open the link and log in. I see each item as text, grouped (for example one job with its achievements).
 3. For each item I click **Yes** (check), **Fix** (change the text, then check), or skip.
 4. The dashboard calls `POST /api/review/check` or `POST /api/review/fix` with my **login session**. The AI apps use `/mcp` and never have a session, so they can't call these addresses. See `docs/API.md`, part 5.
@@ -515,11 +515,11 @@ Why this way (decided 2026-10-11):
 | MCP elicitation (the server asks me inside the app) | **No.** Claude Code supports it; Claude Desktop (October 2026) claims to, but never shows the question and the call hangs | No |
 | I answer in the chat | Yes | **Yes**: the AI carries my answer to the server |
 | A review script in the terminal | Yes | **Yes** in Claude Code: it can run the script and type `y` |
-| **The Review page, with my password** | **Yes**: `review_items` only returns text and a link | **No**: the AI doesn't know my password |
+| **The Review page, with my password** | **Yes**: the tools only return text and a link | **No**: the AI doesn't know my password |
 
 ### Rules
 
-1. **Only the dashboard's review addresses (with my login session) can set `checked = 1`.** No MCP tool can, `review_items` included.
+1. **Only the dashboard's review addresses (with my login session) can set `checked = 1`.** No MCP tool can.
 2. **When an item is edited** with a normal tool or a normal profile address (`PATCH /api/profile/items/...`), it becomes `checked = 0` again.
 3. **When I fix an item** through `POST /api/review/fix`, it stays checked, because I made the change.
 4. **A checked item that is used as a proof can be deleted.** Its proofs are deleted with it (foreign keys with `ON DELETE CASCADE`). Then I re-run the match.

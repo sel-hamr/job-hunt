@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`. Next: the `import_cv` prompt (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. Next: the HTTP door (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -17,7 +17,7 @@ Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `prof
 | Errors | A rejected save returns a **list of all problems** at once, so the AI can fix them all in one try. Example: `Number "5 years" has no claim. Skill "Kubernetes" is not in your checked profile.` |
 | Hints | Read-only tools are marked `readOnlyHint`. Delete tools are marked `destructiveHint`, so the AI app can ask me first. |
 | `checked` | **No tool sets `checked = 1`.** Only the dashboard's Review page, with my login, can (see `DATABASE.md`, part 12). A tool that edits a checked item sets it back to `checked = 0`. |
-| Review link | **Every tool that changes profile data answers with the review link for that item** (`<DASHBOARD_URL>/review?type=<type>&id=<id>`, or `?type=profile`), and its description tells the AI to always show me the link. `review_items` gives the link to everything that waits. |
+| Review link | **Every tool that changes profile data answers with a `review_link`** (`<DASHBOARD_URL>/review?type=<type>&id=<id>`, `?type=profile`, or `/review` for many items), in the text **and** in the structured answer (some apps give the AI only the structured part). Its description tells the AI to always end its reply with the link, because I can't see the tool answer. There is no separate review tool: the Review page lists everything that waits. |
 | Descriptions | Each tool has a clear description: what it does, when to use it, and when **not** to use it. The AI reads it to pick the right tool. |
 | Step | Each tool is built in the build step shown (see `PRODUCT.md`). |
 
@@ -40,12 +40,10 @@ The input schema changes with the `type`, so each kind is still checked correctl
 | `profile_item_add` | Add one item. | `type` (`experience` / `achievement` / `skill` / `skill_proof` / `project` / `education` / `certificate` / `language`), `source` (`imported` / `manual`), the item fields | New item with `id`, `checked = 0` |
 | `profile_item_update` | Change one item. | `type`, `id`, the fields to change | Changed item. `checked` becomes `0`. |
 | `profile_item_delete` | Delete one item. Destructive. | `type`, `id` | What was deleted, **including proofs removed with it**, and which jobs to re-match. |
-| `review_items` | **Starts the human check.** Read-only: it checks nothing itself. | `type` (optional) | How many items are not checked yet, per kind, and the link to the dashboard's Review page (for example `http://localhost:3000/review`). |
-
-`review_items` notes:
-- It works for profile items **and** company notes (later).
-- I open the link, log in, and check, fix or skip each item in my browser. My answers go from the browser to `/api/review/*` with my login session, never through the AI. See `DATABASE.md`, part 12.
-- It works in every MCP app, because it only returns text and a link.
+Review link notes (there is no separate review tool):
+- Every tool that saves something to check answers with a `review_link`, and the AI ends its reply with it. This works for profile items **and** company notes (later).
+- I open the link, log in, and check, fix or skip each item in my browser. The Review page lists everything that still waits. My answers go from the browser to `/api/review/*` with my login session, never through the AI. See `DATABASE.md`, part 12.
+- It works in every MCP app, because the tools only return text and a link.
 
 ### `profile_import` input
 
@@ -176,7 +174,7 @@ Each prompt holds the writing rules and tells the AI which tools to use, in whic
 
 | Prompt | Input | What the AI does | Step |
 |---|---|---|---|
-| `import_cv` | `cv_text`, `portfolio_url` (optional) | Reads my CV, and opens my portfolio site with its own web tool (if it can't, asks me to paste the page text) → merges items found in both → adds the portfolio to `profile.links` as `Portfolio` → fills required fields the CV doesn't state (skill `level`, `experience_type`) with its **best guess** → calls `profile_import` **once** → tells me what was saved, **lists every guess**, and asks me to run `review_items`. Guesses are safe only because nothing is checked until I review it. | 1 |
+| `import_cv` | `cv_text` (optional: empty = the CV file I attach in the chat), `portfolio_url` (optional) | Reads my CV, and opens my portfolio site with its own web tool (if it can't, asks me to paste the page text) → merges items found in both → adds the portfolio to `profile.links` as `Portfolio` → fills required fields the CV doesn't state (skill `level`, `experience_type`) with its **best guess**, and never invents other facts → calls `profile_import` **once** (if the profile is not empty, it stops and tells me: it never resets it) → tells me what was saved, **lists every guess**, and ends its reply with the `review_link` from the `profile_import` answer. Guesses are safe only because nothing is checked until I review it. | 1 |
 | `analyze_job` | `job_id` | Pulls out every requirement with its **exact quote** → `requirements_set`. If it's not clear, it chooses must-have. | 2 |
 | `check_match` | `job_id` | `profile_get` (checked only) → compares each requirement → `match_save` → shows me the list and the fit label. | 2 |
 | `tailor_cv` | `job_id` | Writes a CV (1-2 pages, ATS-friendly, English, sounds human, no gaps added) **with claims** → `document_save` → fixes the problems if rejected → `ats_check`. | 4 |
