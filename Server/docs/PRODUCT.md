@@ -24,7 +24,7 @@ Status: building step 1 (Profile). Progress and next steps: `AGENTS.md`, "Curren
 | Match result | **A list per requirement**: must-have or nice-to-have, then Yes / Partly / No with proof, plus a short honest summary. |
 | Requirements | **Saved as rows.** I can fix them, re-run the match later, and see which skills I miss most often. |
 | Checked items | After the CV import, every item is `checked = no`. **Only items I marked `checked = yes` can be used as proof.** |
-| Who can check | **Only me**, on the **Review page in the dashboard** (needs my login, which the AI never has). In any AI app, `review_items` gives me the link. If the AI edits a checked item, it becomes not checked again. Details: [DATABASE.md](DATABASE.md), part 12. |
+| Who can check | **Only me**, on the **Review page in the dashboard** (needs my login, which the AI never has). In any AI app, the tool that saved the change gives me the review link. If the AI edits a checked item, it becomes not checked again. Details: [DATABASE.md](DATABASE.md), part 12. |
 | Portfolio | **Links + text** (GitHub, website). No files in version 1. |
 | Language | **English only** for now. |
 | History | **Keep every version** of each CV and letter, linked to the job, and mark which one I sent. **A saved document never changes.** A change creates a new version. |

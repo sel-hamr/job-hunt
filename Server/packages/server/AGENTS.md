@@ -25,7 +25,7 @@ Also follow the root `AGENTS.md`.
 - On open, set `journal_mode=WAL`, `foreign_keys=ON` and a `busy_timeout`. The stdio and HTTP servers may use the same file at the same time.
 - Migrations are numbered `.sql` files in `src/db/migrations/` (`001_...sql`, `002_...sql`). `PRAGMA user_version` tracks which ones have run.
 - **Never edit an old migration.** Add a new one.
-- **No MCP tool may set `checked = 1`.** Only `POST /api/review/check` and `/fix`, with my login session (the dashboard's Review page), can. `review_items` only returns a link. When the AI edits a checked item, set `checked = 0`. See `docs/DATABASE.md`, part 12.
+- **No MCP tool may set `checked = 1`.** Only `POST /api/review/check` and `/fix`, with my login session (the dashboard's Review page), can. Tools only return a `review_link`. When the AI edits a checked item, set `checked = 0`. See `docs/DATABASE.md`, part 12.
 - The API is synchronous, so keep each query small and fast. A slow query blocks the whole server.
 - The default database file is `data/jobs.sqlite`, and `DB_PATH` can change it. Never commit the file.
 

@@ -43,14 +43,13 @@ Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1
 
 ### Next, in this order
 
-1. **`import_cv` prompt**: CV + portfolio site → merge → guess missing required fields and list the guesses → `profile_import` once.
+1. **`import_cv` prompt**: CV + portfolio site → merge → guess missing required fields and list the guesses → `profile_import` once → end with its `review_link`.
 2. **HTTP door** (`transports/http.ts`): `/mcp` with the MCP token, `/api`, `/health`, `Host` / `Origin` checks, `127.0.0.1` only.
 3. **Login**: `users` and `sessions` tables (migration `002`), the create-user script, `/api/auth/*`. Plan: `docs/DATABASE.md` part 7c, `docs/API.md`.
 4. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
 5. **Dashboard** (`FrontEnd/`): login page and the **Review page** first, then Home and Profile.
-6. **`review_items`** tool: count + link to the Review page.
-7. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
-8. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
+6. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
+7. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
 
 After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 
