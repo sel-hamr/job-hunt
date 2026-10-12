@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. Next: the HTTP door (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. The HTTP door (`/mcp`) is done too. Next: login (see `AGENTS.md`, "Current status").
 
 ---
 

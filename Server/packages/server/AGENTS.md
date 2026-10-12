@@ -4,8 +4,9 @@ Also follow the root `AGENTS.md`.
 
 ## The two transports
 
-- One codebase, two transports. The `--transport stdio|http` flag picks one, and the default is `stdio`.
-- HTTP settings: `--port`, `--host` (default `127.0.0.1`) and `--auth-token` (or the `AUTH_TOKEN` env var).
+- One codebase, two transports. The `TRANSPORT` env var (`stdio` or `http`) picks one, and the default is `stdio`.
+- HTTP settings are env vars (`src/config/index.ts`): `HOST` (default `127.0.0.1`), `PORT` (default `3001`) and `AUTH_TOKEN` (needed for HTTP, 32+ characters). No command-line flags: a token on the command line shows in the process list.
+- The HTTP door uses **Express 5** with `createMcpExpressApp` from `@modelcontextprotocol/express`: on a localhost host it adds the `Host` and `Origin` checks and the JSON body parser. We check the MCP token ourselves.
 - HTTP endpoints: `/mcp` for MCP, `/api/...` for the dashboard's admin API (see `docs/API.md`), and `/health` for a health check.
 - HTTP security lives only in `src/transports/http.ts`: check the bearer token on `/mcp`, the **session** on `/api` (every address except login), the `Host` header and the `Origin` header.
 - `/mcp` and `/api` use **different secrets**: the MCP token for AI apps, a login session for the dashboard. An AI app never gets a session, so it can never set `checked = 1` through the API.
