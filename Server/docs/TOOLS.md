@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`. Next: the `import_cv` prompt (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. Next: the HTTP door (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -174,7 +174,7 @@ Each prompt holds the writing rules and tells the AI which tools to use, in whic
 
 | Prompt | Input | What the AI does | Step |
 |---|---|---|---|
-| `import_cv` | `cv_text`, `portfolio_url` (optional) | Reads my CV, and opens my portfolio site with its own web tool (if it can't, asks me to paste the page text) → merges items found in both → adds the portfolio to `profile.links` as `Portfolio` → fills required fields the CV doesn't state (skill `level`, `experience_type`) with its **best guess** → calls `profile_import` **once** → tells me what was saved, **lists every guess**, and ends its reply with the `review_link` from the `profile_import` answer. Guesses are safe only because nothing is checked until I review it. | 1 |
+| `import_cv` | `cv_text` (optional: empty = the CV file I attach in the chat), `portfolio_url` (optional) | Reads my CV, and opens my portfolio site with its own web tool (if it can't, asks me to paste the page text) → merges items found in both → adds the portfolio to `profile.links` as `Portfolio` → fills required fields the CV doesn't state (skill `level`, `experience_type`) with its **best guess**, and never invents other facts → calls `profile_import` **once** (if the profile is not empty, it stops and tells me: it never resets it) → tells me what was saved, **lists every guess**, and ends its reply with the `review_link` from the `profile_import` answer. Guesses are safe only because nothing is checked until I review it. | 1 |
 | `analyze_job` | `job_id` | Pulls out every requirement with its **exact quote** → `requirements_set`. If it's not clear, it chooses must-have. | 2 |
 | `check_match` | `job_id` | `profile_get` (checked only) → compares each requirement → `match_save` → shows me the list and the fit label. | 2 |
 | `tailor_cv` | `job_id` | Writes a CV (1-2 pages, ATS-friendly, English, sounds human, no gaps added) **with claims** → `document_save` → fixes the problems if rejected → `ats_check`. | 4 |
