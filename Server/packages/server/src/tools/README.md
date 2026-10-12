@@ -19,3 +19,5 @@ A tool that changes profile data also returns the review link (`lib/review-link.
 |---|---|
 | `profile_get` | `profile/get.ts` |
 | `profile_update` | `profile/update.ts` |
+| `profile_import` | `profile/import.ts` |
+| `profile_reset` | `profile/reset.ts` |

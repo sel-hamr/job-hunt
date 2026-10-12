@@ -32,6 +32,7 @@ Rules:
 | `experiences.ts`, `achievements.ts`, `skills.ts`, `skill-proofs.ts`, `projects.ts`, `education.ts`, `certificates.ts`, `languages.ts` | one per item kind |
 | `checks.ts` | `setItemChecked(db, type, id, checked)` for every item kind |
 | `update.ts` | `updateRow`: the shared "change only the sent fields" helper |
+| `reset.ts` | `deleteAllProfileRows`: empties every profile table (for `profile_reset`) |
 
 Notes:
 - `skill_proofs` has no update (delete and add a new one). `achievements` can't change their job / project link.

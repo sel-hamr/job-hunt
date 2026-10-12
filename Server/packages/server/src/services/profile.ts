@@ -7,7 +7,11 @@ import {
   type ProfileItemType,
   type ProfileItemUpdateInput,
   type ProfileUpdateInput,
+  type ProfileImportInput,
+  type ProfileImportResult,
+  type ProfileResetResult,
   type ProfileWithItems,
+  type SkillProofCreateInput,
   type SkillProof,
   type Source,
 } from "@jobhunt/shared";
@@ -21,6 +25,7 @@ import * as experiences from "../db/repositories/experiences.ts";
 import * as languages from "../db/repositories/languages.ts";
 import * as profile from "../db/repositories/profile.ts";
 import * as projects from "../db/repositories/projects.ts";
+import { deleteAllProfileRows } from "../db/repositories/reset.ts";
 import * as skillProofs from "../db/repositories/skill-proofs.ts";
 import * as skills from "../db/repositories/skills.ts";
 import { ConflictError, NotFoundError, RuleError } from "../lib/errors.ts";
@@ -337,5 +342,129 @@ export function deleteItem(db: Db, type: ProfileItemType, id: number): DeleteRes
     deleted: item,
     also_deleted: { achievements: linkedAchievements, skill_proofs: linkedProofs },
     jobs_to_rematch: [],
+  };
+}
+
+// --- Import (first setup from my CV, see docs/TOOLS.md "profile_import") ---
+
+type ProofKey = "experience_id" | "project_id" | "education_id" | "certificate_id";
+
+function isProfileEmpty(db: Db): boolean {
+  const { profile: main, ...items } = getProfileWithItems(db);
+  return main === null && Object.values(items).every((list) => list.length === 0);
+}
+
+// Saves the whole profile in one go: all of it, or nothing.
+// The schema already checked the refs and the duplicate names.
+export function importProfile(db: Db, input: ProfileImportInput): ProfileImportResult {
+  if (!isProfileEmpty(db)) {
+    throw new ConflictError(
+      "The profile is not empty. profile_import is only for the first setup: use profile_update and the item tools.",
+    );
+  }
+
+  return inTransaction(db, () => {
+    const counts = {
+      experiences: 0,
+      achievements: 0,
+      projects: 0,
+      education: 0,
+      certificates: 0,
+      skills: 0,
+      skill_proofs: 0,
+      languages: 0,
+    };
+
+    // ref -> the saved item, so skills can point to it.
+    const refs = new Map<string, { key: ProofKey; id: number }>();
+    const remember = (ref: string | undefined, key: ProofKey, id: number) => {
+      if (ref !== undefined) refs.set(ref, { key, id });
+    };
+
+    // The order (position) is the place in the list.
+    const addAchievements = (
+      link: { experience_id: number } | { project_id: number },
+      list: { text: string; number?: string | null }[] = [],
+    ) => {
+      list.forEach((achievement, position) => {
+        achievements.insertAchievement(db, { type: "achievement", ...link, ...achievement, position }, "imported");
+        counts.achievements++;
+      });
+    };
+
+    profile.insertProfile(db, input.profile);
+
+    for (const { ref, achievements: list, ...fields } of input.experiences) {
+      const saved = experiences.insertExperience(db, { type: "experience", ...fields }, "imported");
+      remember(ref, "experience_id", saved.id);
+      addAchievements({ experience_id: saved.id }, list);
+      counts.experiences++;
+    }
+
+    for (const { ref, achievements: list, ...fields } of input.projects) {
+      const saved = projects.insertProject(db, { type: "project", ...fields }, "imported");
+      remember(ref, "project_id", saved.id);
+      addAchievements({ project_id: saved.id }, list);
+      counts.projects++;
+    }
+
+    for (const { ref, ...fields } of input.education) {
+      const saved = education.insertEducation(db, { type: "education", ...fields }, "imported");
+      remember(ref, "education_id", saved.id);
+      counts.education++;
+    }
+
+    for (const { ref, ...fields } of input.certificates) {
+      const saved = certificates.insertCertificate(db, { type: "certificate", ...fields }, "imported");
+      remember(ref, "certificate_id", saved.id);
+      counts.certificates++;
+    }
+
+    for (const { proven_by = [], ...fields } of input.skills) {
+      const saved = skills.insertSkill(db, { type: "skill", ...fields }, "imported");
+      counts.skills++;
+      // new Set: the same ref twice makes only one proof.
+      for (const ref of new Set(proven_by)) {
+        const target = refs.get(ref)!; // the schema checked that every ref exists
+        const proof: SkillProofCreateInput = { type: "skill_proof", skill_id: saved.id };
+        proof[target.key] = target.id;
+        skillProofs.insertSkillProof(db, proof, "imported");
+        counts.skill_proofs++;
+      }
+    }
+
+    for (const fields of input.languages) {
+      languages.insertLanguage(db, { type: "language", ...fields }, "imported");
+      counts.languages++;
+    }
+
+    const items = Object.values(counts).reduce((sum, n) => sum + n, 0);
+    return {
+      counts,
+      ids: Object.fromEntries([...refs].map(([ref, { id }]) => [ref, id])),
+      not_checked: items + 1, // + the profile row
+    };
+  });
+}
+
+// --- Reset (empty the whole profile) ---
+
+// Deletes the profile and every item, checked or not. It can't be undone.
+// After it, profile_import works again.
+export function resetProfile(db: Db): ProfileResetResult {
+  const all = getProfileWithItems(db);
+  inTransaction(db, () => deleteAllProfileRows(db));
+  return {
+    deleted: {
+      profile: all.profile !== null,
+      experiences: all.experiences.length,
+      achievements: all.achievements.length,
+      projects: all.projects.length,
+      education: all.education.length,
+      certificates: all.certificates.length,
+      skills: all.skills.length,
+      skill_proofs: all.skill_proofs.length,
+      languages: all.languages.length,
+    },
   };
 }
