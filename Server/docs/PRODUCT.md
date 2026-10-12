@@ -118,6 +118,16 @@ Full plan: [`Extension/README.md`](../../Extension/README.md) (folder `Job Hunt/
 - **My profile is never in the prompt.** Claude reads it with the server's tools.
 - **It's not scraping:** it reads only the page I have open, and only when I click.
 
+## Job search (`find_jobs` prompt)
+
+- I run the `find_jobs` prompt in an AI app that has a **browser tool** (for example Claude Desktop with Claude in Chrome) and our server connected **at the same time**. I tell it what I want: role, place, what to avoid.
+- **The AI searches, the server doesn't.** The AI uses its own browser, with my own login (LinkedIn by default). The server never opens a web page or a link. It only gets the text, through `job_add`, like a pasted job.
+- **Only when I run it.** No search runs in the background or on a timer.
+- **Read only.** The AI never clicks Apply, Easy Apply, Message, Connect or Follow. If it sees a login wall, a captcha or a security check, it stops and tells me.
+- For each job that fits, it saves the **full** posting text (it clicks "See more" first), then saves the requirements and the match. A job that clearly doesn't fit is **not saved**. It is only listed in the reply, with the reason.
+- It saves only a few jobs per run (5 by default), because each full match uses a lot of the chat.
+- At the end it shows the saved jobs, best fit first, and the jobs it didn't save, with the reasons.
+
 ## Final files (PDF)
 
 There are two kinds of final file. The truth always comes from the checked Markdown saved in our database.
@@ -170,7 +180,7 @@ Do not add these unless I ask:
 
 - Anything **after I apply**: application status tracker, follow-up reminders, thank-you notes, interview prep, STAR story bank, stats.
 - **Auto-apply** bots (sending applications for me).
-- **Job search or scraping** from job sites (I paste the job text).
+- **The server** reading job sites or opening links. Only the AI app's own browser reads job sites (see "Job search").
 - **Word / .docx files** (we use our own PDF plus Canva instead).
 - Many users and login.
 - Languages other than English (for now).
@@ -215,7 +225,7 @@ Rules:
 
 | Table | Fields |
 |---|---|
-| `jobs` | title, company (links to `companies`), city, country, work mode (`on-site` / `hybrid` / `remote`), contract (`full-time` / `part-time` / `internship` / `freelance` / `temporary`), level (`junior` / `mid` / `senior` / `lead`), salary (min, max, currency, `month` / `year`, all optional), link (saved only as a note, **never opened**), posted date, deadline (optional), full text (what I pasted, **never changed**), skipped (yes/no), skip reason |
+| `jobs` | title, company (links to `companies`), city, country, work mode (`on-site` / `hybrid` / `remote`), contract (`full-time` / `part-time` / `internship` / `freelance` / `temporary`), level (`junior` / `mid` / `senior` / `lead`), salary (min, max, currency, `month` / `year`, all optional), link (the server **never opens** it, and uses it to find the same job twice), posted date, deadline (optional), full text (what I pasted, **never changed**), skipped (yes/no), skip reason |
 | `requirements` | job, text (e.g. "3+ years with Node.js"), quote (the exact sentence from the job text), type (`must-have` / `nice-to-have`), category (`skill` / `years of experience` / `education` / `certificate` / `language` / `soft skill`), keywords (used by the ATS check), min years (optional) |
 | `matches` | requirement, result (`yes` / `partly` / `no`), note (e.g. "Partly: 2 years, not 3"), date |
 | `match_proofs` | match, proof item (only **checked** profile items) |
@@ -271,6 +281,7 @@ Ready instructions that the AI app uses. They hold the writing rules: tell the t
 - `import_cv`: read my CV and my portfolio site, and save everything with one `profile_import` call.
 - `analyze_job`: pull out the requirements and save them.
 - `check_match`: compare the requirements with my profile.
+- `find_jobs`: search a job site with the AI app's browser, then save, analyze and match the jobs that fit (see "Job search").
 - `tailor_cv`: write a CV for one job, with proofs.
 - `write_cover_letter`: write a letter for one job, with proofs for facts.
 
@@ -287,3 +298,4 @@ Each step works on its own and is useful before the next one starts.
 
 **The dashboard grows with the steps:** step 1 adds login, Home, Profile and Review (with their `/api` addresses). Step 2 adds Jobs. Later steps add their own pages.
 The extension can be built any time. It needs `job_add` and `requirements_set` (step 2) to be useful.
+The `find_jobs` prompt comes last in step 2. It needs `job_add`, `job_list`, `requirements_set` and `match_save`.

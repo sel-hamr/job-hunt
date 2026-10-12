@@ -273,7 +273,7 @@ A `CHECK` keeps `checked` and `checked_at` together: `checked = 1` needs a `chec
 | `salary_max` | INTEGER | no | |
 | `salary_currency` | TEXT | no | 3 letters, e.g. `MAD` |
 | `salary_period` | TEXT | no | `month` / `year` |
-| `link` | TEXT | no | saved only as a note, **never opened** |
+| `link` | TEXT | no | the server **never opens** it. `job_add` refuses a link that is already saved (exact text). The AI app may open it in its own browser (`find_jobs`). |
 | `posted_date` | TEXT | no | `YYYY-MM-DD` |
 | `deadline` | TEXT | no | `YYYY-MM-DD` |
 | `full_text` | TEXT | yes | the text I pasted, **never changed** |
