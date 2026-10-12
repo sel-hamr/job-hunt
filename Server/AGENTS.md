@@ -41,15 +41,15 @@ Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1
 - `profile_import`: `ProfileImportInputSchema` + `ProfileImportResultSchema` in `shared` (refs, `proven_by` and duplicate names checked in the schema), `importProfile` service (empty profile only, one transaction), the tool.
 - `profile_reset` tool (needs `confirm: "DELETE MY PROFILE"`, destructive) and `npm run reset-profile` script: empty the whole profile, so the import can run again.
 - `import_cv` prompt (`src/prompts/`): CV text or attached file + portfolio → merge → guess only the required fields → one `profile_import` → list the guesses and end with the `review_link`.
+- HTTP door (`transports/http.ts`, Express 5): `TRANSPORT=http` with `HOST`, `PORT` (3001) and `AUTH_TOKEN`; `/mcp` needs the Bearer token, `/health`, `Host` / `Origin` checks, JSON errors, `127.0.0.1` by default. `/api` answers 404 until the login step.
 
 ### Next, in this order
 
-1. **HTTP door** (`transports/http.ts`): `/mcp` with the MCP token, `/api`, `/health`, `Host` / `Origin` checks, `127.0.0.1` only.
-2. **Login**: `users` and `sessions` tables (migration `002`), the create-user script, `/api/auth/*`. Plan: `docs/DATABASE.md` part 7c, `docs/API.md`.
-3. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
-4. **Dashboard** (`FrontEnd/`): login page and the **Review page** first, then Home and Profile.
-5. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
-6. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
+1. **Login**: `users` and `sessions` tables (migration `002`), the create-user script, `/api/auth/*`. Plan: `docs/DATABASE.md` part 7c, `docs/API.md`.
+2. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
+3. **Dashboard** (`FrontEnd/`): login page and the **Review page** first, then Home and Profile.
+4. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
+5. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
 
 After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 
@@ -79,7 +79,7 @@ After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 
 - **MCP TypeScript SDK v2** is the stable line since 2026-07-27. Use `@modelcontextprotocol/server` and `@modelcontextprotocol/node`, not v1 `@modelcontextprotocol/sdk`. Read the docs in `github.com/modelcontextprotocol/typescript-sdk` (`docs/`) before you write SDK code. Do not guess API names.
 - **v2 HTTP is stateless.** The handler builds a new server for every request. So open the database **once** at startup and pass it into the server factory. Never open the database inside the factory.
-- **The v2 HTTP handler does not check `Host`, `Origin` or tokens.** We do that ourselves in `transports/http.ts`. Bind to `127.0.0.1` by default.
+- **The v2 HTTP handler (`createMcpHandler`) does not check `Host`, `Origin` or tokens.** In `transports/http.ts`, `createMcpExpressApp` adds the `Host` / `Origin` checks and we check the token. Bind to `127.0.0.1` by default.
 - **`node:sqlite`** in Node 24 exports `DatabaseSync`. Node 26 renames it to `Database` and keeps `DatabaseSync` as a deprecated alias. The API is synchronous, and its stability level is "release candidate".
 - **Claude models:** `claude-opus-5-5` is the default. Use `claude-haiku-5-5` for cheap bulk work.
 

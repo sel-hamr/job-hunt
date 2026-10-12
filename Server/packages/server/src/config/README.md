@@ -1,9 +1,9 @@
 # config (the settings)
 
 Reads settings one time at start, and checks they are correct:
-- which door: `stdio` or `http`
-- port and host for HTTP (host is `127.0.0.1` by default, for safety)
-- auth token (password) for HTTP
+- which door: `TRANSPORT`, `stdio` (default) or `http`
+- for HTTP: `HOST` (default `127.0.0.1`, for safety) and `PORT` (default `3001`)
+- for HTTP: `AUTH_TOKEN`, the MCP token (a password, 32+ characters). HTTP refuses to start without it.
 - database file path (`DB_PATH`)
 - dashboard address (`DASHBOARD_URL`, default `http://localhost:3000`), used for the review links in tool answers
 
