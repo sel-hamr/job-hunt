@@ -90,4 +90,4 @@ npm run dev     # http://localhost:3000
 
 ## Not planned
 
-Anything after I apply (status tracker, interview prep), auto-apply bots, job scraping, Word files, many users, and languages other than English. Full list in [`PRODUCT.md`](Server/docs/PRODUCT.md#not-planned-we-decided-not-to-build-these).
+Anything after I apply (status tracker, interview prep), auto-apply bots, the server reading job sites (the AI app can search with its own browser: `find_jobs`), Word files, many users, and languages other than English. Full list in [`PRODUCT.md`](Server/docs/PRODUCT.md#not-planned-we-decided-not-to-build-these).
