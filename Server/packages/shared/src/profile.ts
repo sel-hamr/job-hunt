@@ -359,3 +359,149 @@ export const ProfileWithItemsSchema = z.object({
   languages: z.array(LanguageSchema),
 });
 export type ProfileWithItems = z.infer<typeof ProfileWithItemsSchema>;
+
+// --- Import (fill an empty profile in one go, from a CV) ---
+
+// A short name Claude makes up, so a skill can point to an item that has no id yet.
+// It is used only during the import and is never saved.
+const Ref = z.string().trim().min(1);
+
+// The order (position) comes from the place in the list, so it is not sent.
+const ImportAchievementSchema = z
+  .object({ text: achievementFields.text, number: achievementFields.number })
+  .partial({ number: true });
+
+const ImportExperienceSchema = z
+  .object({ ref: Ref, ...experienceItemFields, achievements: z.array(ImportAchievementSchema) })
+  .partial({ ref: true, city: true, remote: true, end_date: true, summary: true, achievements: true })
+  .refine(endNotBeforeStart, END_NOT_BEFORE_START);
+
+const ImportProjectSchema = z
+  .object({ ref: Ref, ...projectFields, achievements: z.array(ImportAchievementSchema) })
+  .partial({
+    ref: true,
+    role: true,
+    description: true,
+    links: true,
+    start_date: true,
+    end_date: true,
+    achievements: true,
+  })
+  .refine(endNotBeforeStart, END_NOT_BEFORE_START);
+
+const ImportEducationSchema = z
+  .object({ ref: Ref, ...educationFields })
+  .partial({ ref: true, field: true, start_date: true, end_date: true, grade: true })
+  .refine(endNotBeforeStart, END_NOT_BEFORE_START);
+
+const ImportCertificateSchema = z
+  .object({ ref: Ref, ...certificateFields })
+  .partial({ ref: true, expires: true, link: true })
+  .refine(expiresNotBeforeDate, EXPIRES_NOT_BEFORE_DATE);
+
+const ImportSkillSchema = z
+  .object({ ...skillFields, proven_by: z.array(Ref) })
+  .partial({ other_names: true, proven_by: true });
+
+// The places of names that were already seen earlier in the list (upper/lower case ignored).
+const duplicateIndexes = (names: string[]) => {
+  const seen = new Set<string>();
+  return names.flatMap((name, i) => {
+    const key = name.toLowerCase();
+    if (seen.has(key)) return [i];
+    seen.add(key);
+    return [];
+  });
+};
+
+export const ProfileImportInputSchema = z
+  .object({
+    profile: z.object(profileFields).partial().required({ name: true }),
+    experiences: z.array(ImportExperienceSchema).default([]),
+    projects: z.array(ImportProjectSchema).default([]),
+    education: z.array(ImportEducationSchema).default([]),
+    certificates: z.array(ImportCertificateSchema).default([]),
+    skills: z.array(ImportSkillSchema).default([]),
+    languages: z.array(z.object(languageFields)).default([]),
+  })
+  .superRefine((v, ctx) => {
+    // 1. Every ref is used only once.
+    const refs = new Set<string>();
+    const lists: [string, { ref?: string }[]][] = [
+      ["experiences", v.experiences],
+      ["projects", v.projects],
+      ["education", v.education],
+      ["certificates", v.certificates],
+    ];
+    for (const [key, items] of lists) {
+      items.forEach((item, i) => {
+        if (item.ref === undefined) return;
+        if (refs.has(item.ref)) {
+          ctx.addIssue({ code: "custom", message: `ref "${item.ref}" is used twice`, path: [key, i, "ref"] });
+        }
+        refs.add(item.ref);
+      });
+    }
+
+    // 2. Every proven_by points to an item that has this ref.
+    v.skills.forEach((skill, i) => {
+      skill.proven_by?.forEach((ref, j) => {
+        if (!refs.has(ref)) {
+          ctx.addIssue({ code: "custom", message: `No item has ref "${ref}"`, path: ["skills", i, "proven_by", j] });
+        }
+      });
+    });
+
+    // 3. No two skills, and no two languages, with the same name.
+    for (const i of duplicateIndexes(v.skills.map((s) => s.name))) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Skill "${v.skills[i].name}" is there twice`,
+        path: ["skills", i, "name"],
+      });
+    }
+    for (const i of duplicateIndexes(v.languages.map((l) => l.language))) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Language "${v.languages[i].language}" is there twice`,
+        path: ["languages", i, "language"],
+      });
+    }
+  });
+export type ProfileImportInput = z.infer<typeof ProfileImportInputSchema>;
+
+// How many items of each kind (saved by an import, or deleted by a reset).
+const Count = z.number().int().min(0);
+const ItemCountsSchema = z.object({
+  experiences: Count,
+  achievements: Count,
+  projects: Count,
+  education: Count,
+  certificates: Count,
+  skills: Count,
+  skill_proofs: Count,
+  languages: Count,
+});
+export type ItemCounts = z.infer<typeof ItemCountsSchema>;
+
+export const ProfileImportResultSchema = z.object({
+  counts: ItemCountsSchema,
+  ids: z.record(z.string(), IdSchema), // ref -> new id
+  not_checked: Count, // everything is new, so nothing is checked yet (the profile row too)
+});
+export type ProfileImportResult = z.infer<typeof ProfileImportResultSchema>;
+
+// --- Reset (empty the whole profile) ---
+
+// The exact words the AI must send, so a reset never happens by mistake.
+export const PROFILE_RESET_CONFIRM = "DELETE MY PROFILE";
+
+export const ProfileResetInputSchema = z.object({
+  confirm: z.literal(PROFILE_RESET_CONFIRM).describe(`Exactly "${PROFILE_RESET_CONFIRM}"`),
+});
+export type ProfileResetInput = z.infer<typeof ProfileResetInputSchema>;
+
+export const ProfileResetResultSchema = z.object({
+  deleted: ItemCountsSchema.extend({ profile: z.boolean() }), // profile: was there a profile row?
+});
+export type ProfileResetResult = z.infer<typeof ProfileResetResultSchema>;
