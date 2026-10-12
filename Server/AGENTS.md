@@ -40,16 +40,16 @@ Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1
 - MCP over stdio (SDK v2): `profile_get`, `profile_update` (answers with the review link). Works in Claude Desktop.
 - `profile_import`: `ProfileImportInputSchema` + `ProfileImportResultSchema` in `shared` (refs, `proven_by` and duplicate names checked in the schema), `importProfile` service (empty profile only, one transaction), the tool.
 - `profile_reset` tool (needs `confirm: "DELETE MY PROFILE"`, destructive) and `npm run reset-profile` script: empty the whole profile, so the import can run again.
+- `import_cv` prompt (`src/prompts/`): CV text or attached file + portfolio → merge → guess only the required fields → one `profile_import` → list the guesses and end with the `review_link`.
 
 ### Next, in this order
 
-1. **`import_cv` prompt**: CV + portfolio site → merge → guess missing required fields and list the guesses → `profile_import` once → end with its `review_link`.
-2. **HTTP door** (`transports/http.ts`): `/mcp` with the MCP token, `/api`, `/health`, `Host` / `Origin` checks, `127.0.0.1` only.
-3. **Login**: `users` and `sessions` tables (migration `002`), the create-user script, `/api/auth/*`. Plan: `docs/DATABASE.md` part 7c, `docs/API.md`.
-4. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
-5. **Dashboard** (`FrontEnd/`): login page and the **Review page** first, then Home and Profile.
-6. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
-7. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
+1. **HTTP door** (`transports/http.ts`): `/mcp` with the MCP token, `/api`, `/health`, `Host` / `Origin` checks, `127.0.0.1` only.
+2. **Login**: `users` and `sessions` tables (migration `002`), the create-user script, `/api/auth/*`. Plan: `docs/DATABASE.md` part 7c, `docs/API.md`.
+3. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
+4. **Dashboard** (`FrontEnd/`): login page and the **Review page** first, then Home and Profile.
+5. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
+6. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
 
 After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 

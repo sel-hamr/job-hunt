@@ -1,6 +1,13 @@
 # prompts (ready-made questions)
 
-Ready prompt templates the user can pick in the AI app.
-Example: "Write a cover letter for job #12".
+Ready prompt templates I can pick in the AI app (in Claude Desktop: the **+** button, then the job-hunt menu).
+I fill in a small form, and the AI gets a long, exact instruction.
 
-Optional. Can stay empty at first.
+A prompt only builds text. It never saves anything: the instruction tells the AI which tools to call.
+The full list and what each prompt does: `docs/TOOLS.md`, "Prompts".
+
+`index.ts` adds all prompts to the server in one place.
+
+| Prompt | File |
+|---|---|
+| `import_cv` | `import-cv.ts` |
