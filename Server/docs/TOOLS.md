@@ -96,7 +96,7 @@ Rules:
 
 | Tool | What it does | Input | Output |
 |---|---|---|---|
-| `job_add` | Save a pasted job post. | `company_name` **or** `company_id`, `title`, `full_text`, and the optional fields (city, work mode, contract, level, salary, link, dates) | New job with `id`. The company is created if it's new. |
+| `job_add` | Save a pasted job post. | `company_name` **or** `company_id`, `title`, `full_text`, and the optional fields (city, work mode, contract, level, salary, link, dates) | New job with `id`. The company is created if it's new. **If the same `link` is already saved** (exact text), it saves nothing and answers with the existing job's `id`. |
 | `job_get` | Read one job with its requirements, match and fit label. Read-only. | `id` | Job + requirements + match results + **fit label** |
 | `job_list` | List my jobs. Read-only. | `include_skipped` (default no), `fit` (optional filter), `limit` (default 20) | Short list: id, title, company, fit label, date |
 | `job_update` | Change job fields. | `id`, the fields to change. **Not `full_text`**, which never changes. | The changed job |
@@ -177,6 +177,7 @@ Each prompt holds the writing rules and tells the AI which tools to use, in whic
 | `import_cv` | `cv_text` (optional: empty = the CV file I attach in the chat), `portfolio_url` (optional) | Reads my CV, and opens my portfolio site with its own web tool (if it can't, asks me to paste the page text) → merges items found in both → adds the portfolio to `profile.links` as `Portfolio` → fills required fields the CV doesn't state (skill `level`, `experience_type`) with its **best guess**, and never invents other facts → calls `profile_import` **once** (if the profile is not empty, it stops and tells me: it never resets it) → tells me what was saved, **lists every guess**, and ends its reply with the `review_link` from the `profile_import` answer. Guesses are safe only because nothing is checked until I review it. | 1 |
 | `analyze_job` | `job_id` | Pulls out every requirement with its **exact quote** → `requirements_set`. If it's not clear, it chooses must-have. | 2 |
 | `check_match` | `job_id` | `profile_get` (checked only) → compares each requirement → `match_save` → shows me the list and the fit label. | 2 |
+| `find_jobs` | `query` (role and keywords), `location` (optional), `site` (optional, default LinkedIn), `max_jobs` (optional, default 5), `avoid` (optional) | Needs a **browser tool** in the AI app (if there is none, it stops and tells me). `profile_get` (checked only; if nothing is checked, it stops and tells me to run `import_cv` and review) → `job_list` → searches the site → opens each result, clicks "See more" and reads the **full** posting → a job that clearly doesn't fit (`avoid`, level, place) is **not saved** → else `job_add` (full text unchanged, the clean link, like `https://www.linkedin.com/jobs/view/<id>/`) → `requirements_set` (the `analyze_job` rules) → `match_save` (the `check_match` rules). Stops after `max_jobs` saved jobs, or after reading about 3 times that many. **Read only:** never clicks Apply, Easy Apply, Message, Connect or Follow. A login wall, captcha or security check → stops and tells me. Replies with the saved jobs best fit first (title, company, fit label, top 2 gaps), then the jobs not saved with a one-line reason, then the duplicates. | 2 |
 | `tailor_cv` | `job_id` | Writes a CV (1-2 pages, ATS-friendly, English, sounds human, no gaps added) **with claims** → `document_save` → fixes the problems if rejected → `ats_check`. | 4 |
 | `write_cover_letter` | `job_id` | Writes a letter using checked facts and checked company notes, **with claims** → `document_save`. | 4 |
 | `make_canva_version` | `document_id` | `settings_get` → Canva `copy-design` → replaces the placeholders with the **exact saved text** → `export-design` → `document_set_canva`. | 5 |
@@ -191,4 +192,4 @@ None in version 1. Everything is read with tools.
 
 ## 12. Count
 
-About **36 tools** and **6 prompts**. If the AI gets confused by too many tools, we can add a setting later that turns topics on and off (like GitHub's "toolsets").
+About **36 tools** and **7 prompts**. If the AI gets confused by too many tools, we can add a setting later that turns topics on and off (like GitHub's "toolsets").
