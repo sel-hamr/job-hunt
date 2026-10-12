@@ -1,0 +1,7 @@
+{
+  "name": "job-hunt",
+  "private": true,
+  "scripts": {
+    "setup": "node scripts/install-all.mjs"
+  }
+}
