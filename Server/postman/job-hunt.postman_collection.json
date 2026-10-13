@@ -1,0 +1,345 @@
+{
+  "info": {
+    "name": "job-hunt server",
+    "description": "The requests the job-hunt server answers today: /health, and /mcp (MCP over HTTP) with its tools and prompts. Set baseUrl and mcpToken in the job-hunt environment. Docs: postman/README.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{mcpToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3001"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Is the server running? No token needed.\n\nExpected answer: 200 {\"ok\":true}\n\ncurl: postman/curl/01-health.sh",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. MCP basics",
+      "item": [
+        {
+          "name": "initialize (handshake)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "The first message an AI app sends: who it is and which MCP version it speaks. The server answers with its name and what it offers (tools, prompts). The server is stateless, so the other requests also work without it.\n\nExpected answer: 200, result.serverInfo.name = job-hunt\n\ncurl: postman/curl/02-initialize.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"initialize\",\n  \"params\": {\n    \"protocolVersion\": \"2025-06-18\",\n    \"capabilities\": {},\n    \"clientInfo\": {\n      \"name\": \"curl\",\n      \"version\": \"1.0\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "tools/list",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "Every tool, with its description and input schema. This is what the AI reads to pick a tool.\n\nExpected answer: 200, result.tools = profile_get, profile_update, profile_import, profile_reset\n\ncurl: postman/curl/03-tools-list.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 2,\n  \"method\": \"tools/list\",\n  \"params\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "prompts/list",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "Every prompt (ready-made instruction) and its inputs.\n\nExpected answer: 200, result.prompts = import_cv\n\ncurl: postman/curl/04-prompts-list.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 3,\n  \"method\": \"prompts/list\",\n  \"params\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Prompts",
+      "item": [
+        {
+          "name": "prompts/get import_cv",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "The full instruction the AI gets when I pick import_cv. Prompt inputs are always text. cv_text is left out here, so the instruction says to use the CV file attached in the chat.\n\nExpected answer: 200, result.messages[0].content.text = the instruction\n\ncurl: postman/curl/05-prompt-import-cv.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 4,\n  \"method\": \"prompts/get\",\n  \"params\": {\n    \"name\": \"import_cv\",\n    \"arguments\": {\n      \"portfolio_url\": \"https://example.com\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Profile tools",
+      "item": [
+        {
+          "name": "profile_get",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "Read the whole profile. Read-only. only_checked: true keeps only the facts I have checked.\n\nExpected answer: 200, result.structuredContent = { profile, experiences, achievements, skills, ... }\n\ncurl: postman/curl/06-profile-get.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 5,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"profile_get\",\n    \"arguments\": {\n      \"only_checked\": false\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "profile_update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "Save or change the main profile row. Send only the fields to change; the first save needs a name. The profile becomes NOT checked.\n\nExpected answer: 200, the saved profile with checked: false, and the review link\n\ncurl: postman/curl/07-profile-update.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 6,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"profile_update\",\n    \"arguments\": {\n      \"name\": \"Sel\",\n      \"headline\": \"Backend Developer\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "profile_import",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "First setup from a CV, in one call (all or nothing). Only works on an EMPTY profile: run profile_reset first if needed. Skills point to items with proven_by refs.\n\nExpected answer: 200, counts per kind, ref -> id, not_checked and review_link. On a full profile: isError true, \"The profile is not empty\"\n\ncurl: postman/curl/08-profile-import.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 7,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"profile_import\",\n    \"arguments\": {\n      \"profile\": {\n        \"name\": \"Sel\",\n        \"headline\": \"Backend Developer\",\n        \"country\": \"MA\",\n        \"links\": [\n          {\n            \"label\": \"Portfolio\",\n            \"url\": \"https://example.com\"\n          }\n        ]\n      },\n      \"experiences\": [\n        {\n          \"ref\": \"acme\",\n          \"company\": \"Acme\",\n          \"position\": \"Backend Developer\",\n          \"experience_type\": \"full-time\",\n          \"start_date\": \"2022-03\",\n          \"achievements\": [\n            {\n              \"text\": \"Made the API 40% faster\",\n              \"number\": \"40%\"\n            }\n          ]\n        }\n      ],\n      \"projects\": [\n        {\n          \"ref\": \"jobhunt\",\n          \"name\": \"Job Hunt\",\n          \"links\": [\n            {\n              \"label\": \"GitHub\",\n              \"url\": \"https://github.com/sel-hamr/job-hunt\"\n            }\n          ]\n        }\n      ],\n      \"education\": [\n        {\n          \"ref\": \"school\",\n          \"school\": \"1337\",\n          \"degree\": \"Software engineering\"\n        }\n      ],\n      \"skills\": [\n        {\n          \"name\": \"Node.js\",\n          \"category\": \"framework\",\n          \"level\": \"good\",\n          \"proven_by\": [\n            \"acme\",\n            \"jobhunt\"\n          ]\n        }\n      ],\n      \"languages\": [\n        {\n          \"language\": \"English\",\n          \"level\": \"B2\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "profile_reset (DANGER)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mcp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mcp"
+              ]
+            },
+            "description": "DANGER: deletes the whole profile and every item, checked or not. Can't be undone. Use a test database (DB_PATH) when you try it.\n\nExpected answer: 200, deleted = whether there was a profile row, and counts per kind\n\ncurl: postman/curl/09-profile-reset.sh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 8,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"profile_reset\",\n    \"arguments\": {\n      \"confirm\": \"DELETE MY PROFILE\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
