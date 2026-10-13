@@ -60,7 +60,6 @@ Server/packages/shared/
     ├── index.ts        exports everything
     ├── common.ts       building blocks
     ├── errors.ts
-    ├── auth.ts
     ├── stats.ts
     ├── profile.ts
     ├── review.ts
@@ -130,14 +129,6 @@ Server/packages/shared/
 | Schema | Fields |
 |---|---|
 | `ApiErrorSchema` | `error` (short text), `problems` (list of texts, maybe empty) |
-
-### `auth.ts`
-
-| Schema | Fields |
-|---|---|
-| `LoginInputSchema` | `email` (email, made lower case), `password` (text, 1-200 characters) |
-| `LoginResultSchema` | `session` (text), `expires_at` (timestamp) |
-| `MeSchema` | `email` |
 
 ### `stats.ts`
 

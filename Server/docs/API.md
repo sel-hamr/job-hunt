@@ -3,7 +3,7 @@
 Every address of the server's admin API. **This file is the source of truth for the admin API.**
 If you add or change an address, update this file in the same change.
 
-Status: building. `/mcp` and `/health` exist (the HTTP door). No `/api` address exists yet: they come with the login step in `AGENTS.md`, "Current status".
+Status: building. `/mcp` and `/health` exist (the HTTP door). No `/api` address exists yet: they come with the `/api/profile` and `/api/review` step in `AGENTS.md`, "Current status".
 
 Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **server side**. The AI apps use `/mcp`, never `/api`.
 
@@ -14,27 +14,17 @@ Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **serve
 | Rule | Detail |
 |---|---|
 | Where | The HTTP transport, next to `/mcp`. Base: `/api`. Listens on `127.0.0.1` only. |
-| Login | Every address **except** `POST /api/auth/login` needs `Authorization: Bearer <session>`. No valid session -> **401**. |
+| Login | **None.** Only the dashboard's Next.js server, on my computer, calls it. The `Host` and `Origin` checks block other web pages. |
 | Layers | Same as tools: **route -> service -> repository**. A route checks the input, calls a service and returns JSON. No SQL and no logic in routes. |
 | Same services | The API calls **the same services** as the MCP tools. So every rule (quote check, proofs, "AI edits make an item unchecked", ...) works the same way. |
 | Shapes | Inputs and outputs use the Zod schemas from `@jobhunt/shared` (`packages/shared/`). Every shape and its fields: `SHARED.md`. JSON uses `snake_case`, `true`/`false` (not `0`/`1`), real lists (not JSON text) and `null` for empty. |
-| Errors | JSON: `{ "error": "short message", "problems": ["...", "..."] }`. **400** = wrong input (a list of **all** problems at once, like the tools). **401** = no valid session. **404** = not found. **429** = too many login tries. |
+| Errors | JSON: `{ "error": "short message", "problems": ["...", "..."] }`. **400** = wrong input (a list of **all** problems at once, like the tools). **404** = not found. |
 | Browsers | **No CORS headers.** A browser page can't call the API directly. Only the Next.js server can. |
-| Logs | Never log passwords or session tokens. Logs go to stderr. |
+| Logs | Never log the MCP token. Logs go to stderr. |
 
 ---
 
-## 2. Auth
-
-| Method + address | What it does | Input | Output |
-|---|---|---|---|
-| `POST /api/auth/login` | Check email + password, make a session. | `email`, `password` | `session` (the token), `expires_at`. Wrong email or password -> **401** "Wrong email or password" (same message for both). 5 wrong tries -> **429** for 1 minute. |
-| `POST /api/auth/logout` | Delete this session. | | **204** |
-| `GET /api/auth/me` | Who am I? | | `email` |
-
----
-
-## 3. Home
+## 2. Home
 
 | Method + address | What it does | Output |
 |---|---|---|
@@ -42,7 +32,7 @@ Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **serve
 
 ---
 
-## 4. Profile
+## 3. Profile
 
 `:type` is one of: `experience`, `achievement`, `skill`, `skill_proof`, `project`, `education`, `certificate`, `language`. Same idea as the `profile_item_*` tools: one set of addresses for all kinds.
 
@@ -56,7 +46,7 @@ Who uses it: only the dashboard (`Job Hunt/FrontEnd/`), from the Next.js **serve
 
 ---
 
-## 5. Review (checking items)
+## 4. Review (checking items)
 
 | Method + address | What it does | Input | Output |
 |---|---|---|---|
@@ -68,7 +58,7 @@ This is the **only** way to set `checked = 1`. The MCP tools only send me here w
 
 ---
 
-## 6. Jobs
+## 5. Jobs
 
 | Method + address | What it does | Input | Output |
 |---|---|---|---|
@@ -81,6 +71,6 @@ Adding jobs is **not** in the API. Jobs come in through the AI app (`job_add`).
 
 ---
 
-## 7. Later
+## 6. Later
 
 Addresses for Companies, Documents, Learning, Gap report and Settings come with their server step (see `PRODUCT.md`, "Build order").

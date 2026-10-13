@@ -44,7 +44,7 @@ Format: `type(scope): text`
 
 ```
 feat(server): add profile repository
-fix(dashboard): show an error when login fails
+fix(dashboard): show an error when a save fails
 chore(server): set up npm workspaces and TypeScript
 docs(server): explain how migrations run
 feat(shared)!: rename experience.title to position

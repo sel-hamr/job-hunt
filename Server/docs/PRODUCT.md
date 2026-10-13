@@ -24,12 +24,12 @@ Status: building step 1 (Profile). Progress and next steps: `AGENTS.md`, "Curren
 | Match result | **A list per requirement**: must-have or nice-to-have, then Yes / Partly / No with proof, plus a short honest summary. |
 | Requirements | **Saved as rows.** I can fix them, re-run the match later, and see which skills I miss most often. |
 | Checked items | After the CV import, every item is `checked = no`. **Only items I marked `checked = yes` can be used as proof.** |
-| Who can check | **Only me**, on the **Review page in the dashboard** (needs my login, which the AI never has). In any AI app, the tool that saved the change gives me the review link. If the AI edits a checked item, it becomes not checked again. Details: [DATABASE.md](DATABASE.md), part 12. |
+| Who can check | **Only me**, on the **Review page in the dashboard**. In any AI app, the tool that saved the change gives me the review link. If the AI edits a checked item, it becomes not checked again. Details: [DATABASE.md](DATABASE.md), part 12. |
 | Portfolio | **Links + text** (GitHub, website). No files in version 1. |
 | Language | **English only** for now. |
 | History | **Keep every version** of each CV and letter, linked to the job, and mark which one I sent. **A saved document never changes.** A change creates a new version. |
 | Extra lie checks | When a document is saved, the server also runs a **number check** (every number needs a claim with proof) and a **skill check** (no skill that isn't checked in my profile). Details: [DATABASE.md](DATABASE.md), part 8. |
-| Users | **Only me.** The MCP door (`/mcp`) is protected by one token. The **dashboard has a login** (email + password, one user made by a script, no sign-up). The extension has no login. |
+| Users | **Only me.** The MCP door (`/mcp`) is protected by one token. The dashboard and the extension have **no login**: they run only on my computer, and the server listens on `127.0.0.1` only. |
 | CV style | **1-2 pages, ATS-friendly**: simple layout, clear headings, no tables or pictures. Use job keywords only when they are true. |
 
 ## Bonus feature: gap report ("what should I learn next?")
@@ -100,10 +100,9 @@ Recruiters often distrust text that sounds AI-written.
 
 Full plan: [`FrontEnd/README.md`](../../FrontEnd/README.md) (folder `Job Hunt/FrontEnd/`). Addresses: [API.md](API.md).
 
-- A **Next.js** web page on my computer (`localhost:3000`), with **email + password login**.
+- A **Next.js** web page on my computer (`localhost:3000`). **No login.**
 - **v1 pages:** Home (numbers and charts), Profile (add, edit, delete my info), Review (**check** imported items), Jobs (list + job page, skip).
 - It uses the server's **admin API** (`/api`), which calls the **same services** as the MCP tools. It never opens the database.
-- The server checks the login and keeps **sessions**. The AI apps never get a session, so the AI can't check items through the dashboard.
 - Data shapes are shared with the server through `@jobhunt/shared` (`packages/shared/`).
 - More pages (Companies, Documents, Learning, Gap report, Settings) come with their server step.
 
@@ -285,5 +284,5 @@ Ready instructions that the AI app uses. They hold the writing rules: tell the t
 
 Each step works on its own and is useful before the next one starts.
 
-**The dashboard grows with the steps:** step 1 adds login, Home, Profile and Review (with their `/api` addresses). Step 2 adds Jobs. Later steps add their own pages.
+**The dashboard grows with the steps:** step 1 adds Home, Profile and Review (with their `/api` addresses). Step 2 adds Jobs. Later steps add their own pages.
 The extension can be built any time. It needs `job_add` and `requirements_set` (step 2) to be useful.

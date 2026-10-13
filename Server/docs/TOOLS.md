@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. The HTTP door (`/mcp`) is done too. Next: login (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. The HTTP door (`/mcp`) is done too. Next: `/api/profile` and `/api/review` (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -16,7 +16,7 @@ Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `prof
 | Output | Structured output (with an `outputSchema`) **plus** a short text summary for the AI. |
 | Errors | A rejected save returns a **list of all problems** at once, so the AI can fix them all in one try. Example: `Number "5 years" has no claim. Skill "Kubernetes" is not in your checked profile.` |
 | Hints | Read-only tools are marked `readOnlyHint`. Delete tools are marked `destructiveHint`, so the AI app can ask me first. |
-| `checked` | **No tool sets `checked = 1`.** Only the dashboard's Review page, with my login, can (see `DATABASE.md`, part 12). A tool that edits a checked item sets it back to `checked = 0`. |
+| `checked` | **No tool sets `checked = 1`.** Only the dashboard's Review page can (see `DATABASE.md`, part 12). A tool that edits a checked item sets it back to `checked = 0`. |
 | Review link | **Every tool that changes profile data answers with a `review_link`** (`<DASHBOARD_URL>/review?type=<type>&id=<id>`, `?type=profile`, or `/review` for many items), in the text **and** in the structured answer (some apps give the AI only the structured part). Its description tells the AI to always end its reply with the link, because I can't see the tool answer. There is no separate review tool: the Review page lists everything that waits. |
 | Descriptions | Each tool has a clear description: what it does, when to use it, and when **not** to use it. The AI reads it to pick the right tool. |
 | Step | Each tool is built in the build step shown (see `PRODUCT.md`). |
@@ -42,7 +42,7 @@ The input schema changes with the `type`, so each kind is still checked correctl
 | `profile_item_delete` | Delete one item. Destructive. | `type`, `id` | What was deleted, **including proofs removed with it**, and which jobs to re-match. |
 Review link notes (there is no separate review tool):
 - Every tool that saves something to check answers with a `review_link`, and the AI ends its reply with it. This works for profile items **and** company notes (later).
-- I open the link, log in, and check, fix or skip each item in my browser. The Review page lists everything that still waits. My answers go from the browser to `/api/review/*` with my login session, never through the AI. See `DATABASE.md`, part 12.
+- I open the link and check, fix or skip each item in my browser. The Review page lists everything that still waits. My answers go from the browser to `/api/review/*`, never through the AI. See `DATABASE.md`, part 12.
 - It works in every MCP app, because the tools only return text and a link.
 
 ### `profile_import` input

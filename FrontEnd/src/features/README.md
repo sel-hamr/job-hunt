@@ -9,7 +9,6 @@ One folder per topic. Each folder has what it needs:
 
 | Folder | Topic |
 |---|---|
-| `auth/` | Login form, login and logout. |
 | `home/` | Numbers and charts. |
 | `profile/` | My info and profile items. |
 | `review/` | Checking items. |

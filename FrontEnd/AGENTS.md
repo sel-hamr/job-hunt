@@ -29,16 +29,13 @@ app/ (pages)  ->  features/ (screens + actions)  ->  lib/api/  ->  Server admin 
 
 ## Security rules
 
-- The session lives in an **`httpOnly`** cookie (`sameSite: lax`). Browser JavaScript never reads it.
-- `proxy.ts` only **redirects** to `/login`. It is not the real guard. **The server checks the session on every API call.**
+- **No login.** The dashboard runs only on my computer, and the server API listens on `127.0.0.1` only.
 - Every Server Action checks its input with the Zod schema from `@jobhunt/shared`. The server checks again.
-- Never log passwords or session tokens.
-- No sign-up page. The only user is made with a server script.
 
 ## Truth rules (same as the server)
 
 - **Never invent facts.** The dashboard shows and edits my data. It never makes data up.
-- Only the Review page (with a valid session) can set `checked = yes`.
+- Only the Review page can set `checked = yes`.
 
 ## Tech
 
@@ -46,7 +43,6 @@ app/ (pages)  ->  features/ (screens + actions)  ->  lib/api/  ->  Server admin 
 - shadcn/ui style `base-nova` (built on **Base UI**, `@base-ui/react`, not Radix). The `cn()` helper comes from the `cn` package (shadcn's own, replaces clsx + tailwind-merge).
 - Forms: shadcn **Field** pieces + react-hook-form + Zod (`@hookform/resolvers`). Tables: shadcn Table + TanStack Table. Charts: shadcn Chart (Recharts). Toasts: Sonner.
 - `layout.tsx` must wrap the app in `TooltipProvider` (the sidebar needs it).
-- Next.js 16 names the middleware file `proxy.ts` (it was `middleware.ts` before). Check the Next.js docs before you write it.
 - No tests for now.
 
 ## Commands

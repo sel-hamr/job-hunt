@@ -8,8 +8,8 @@ Also follow the root `AGENTS.md`.
 - HTTP settings are env vars (`src/config/index.ts`): `HOST` (default `127.0.0.1`), `PORT` (default `3001`) and `AUTH_TOKEN` (needed for HTTP, 32+ characters). No command-line flags: a token on the command line shows in the process list.
 - The HTTP door uses **Express 5** with `createMcpExpressApp` from `@modelcontextprotocol/express`: on a localhost host it adds the `Host` and `Origin` checks and the JSON body parser. We check the MCP token ourselves.
 - HTTP endpoints: `/mcp` for MCP, `/api/...` for the dashboard's admin API (see `docs/API.md`), and `/health` for a health check.
-- HTTP security lives only in `src/transports/http.ts`: check the bearer token on `/mcp`, the **session** on `/api` (every address except login), the `Host` header and the `Origin` header.
-- `/mcp` and `/api` use **different secrets**: the MCP token for AI apps, a login session for the dashboard. An AI app never gets a session, so it can never set `checked = 1` through the API.
+- HTTP security lives only in `src/transports/http.ts`: check the bearer token on `/mcp`, the `Host` header and the `Origin` header.
+- Only `/mcp` has a secret (the MCP token). `/api` has **no login**: it is for the dashboard on my computer. AI apps use `/mcp`, never `/api`.
 - `/api` sends **no CORS headers**, so browser pages can't call it directly. Only the Next.js server does.
 - In stdio mode, any text on stdout breaks the protocol. Log to stderr.
 
@@ -26,7 +26,7 @@ Also follow the root `AGENTS.md`.
 - On open, set `journal_mode=WAL`, `foreign_keys=ON` and a `busy_timeout`. The stdio and HTTP servers may use the same file at the same time.
 - Migrations are numbered `.sql` files in `src/db/migrations/` (`001_...sql`, `002_...sql`). `PRAGMA user_version` tracks which ones have run.
 - **Never edit an old migration.** Add a new one.
-- **No MCP tool may set `checked = 1`.** Only `POST /api/review/check` and `/fix`, with my login session (the dashboard's Review page), can. Tools only return a `review_link`. When the AI edits a checked item, set `checked = 0`. See `docs/DATABASE.md`, part 12.
+- **No MCP tool may set `checked = 1`.** Only `POST /api/review/check` and `/fix` (the dashboard's Review page) can. Tools only return a `review_link`. When the AI edits a checked item, set `checked = 0`. See `docs/DATABASE.md`, part 12.
 - The API is synchronous, so keep each query small and fast. A slow query blocks the whole server.
 - The default database file is `data/jobs.sqlite`, and `DB_PATH` can change it. Never commit the file.
 

@@ -23,7 +23,7 @@ Status: **building step 1 (Profile)**. The server's database, profile rules and 
 | Folder | What it is | Stack |
 |---|---|---|
 | [`Server/`](Server/) | The **MCP server**. It owns the SQLite database. It gives tools to AI apps (`/mcp`) and an admin API to the dashboard (`/api`). **It has no AI and no API key.** | Node.js 24+, TypeScript, MCP SDK v2, `node:sqlite`, Zod |
-| [`FrontEnd/`](FrontEnd/) | The **dashboard**. I log in, see my numbers, edit my profile, check imported items and look at my jobs. | Next.js (App Router), Tailwind, shadcn/ui |
+| [`FrontEnd/`](FrontEnd/) | The **dashboard**. I see my numbers, edit my profile, check imported items and look at my jobs. | Next.js (App Router), Tailwind, shadcn/ui |
 | [`Extension/`](Extension/) | A **browser extension**. It turns the job page I have open into one prompt that I copy into Claude. | WXT, React, Tailwind, shadcn/ui |
 
 Inside `Server/packages/`:
@@ -58,14 +58,14 @@ Browser extension  ->  a prompt I copy  ->  paste into Claude
 | [`Server/docs/DATABASE.md`](Server/docs/DATABASE.md) | All tables, columns and database rules (source of truth). |
 | [`Server/docs/TOOLS.md`](Server/docs/TOOLS.md) | All MCP tools and prompts (source of truth). |
 | [`Server/docs/API.md`](Server/docs/API.md) | All admin API addresses used by the dashboard (source of truth). |
-| [`FrontEnd/README.md`](FrontEnd/README.md) | Dashboard plan: pages, login and data flow. |
+| [`FrontEnd/README.md`](FrontEnd/README.md) | Dashboard plan: pages and data flow. |
 | [`Extension/README.md`](Extension/README.md) | Extension plan: modes, prompt template and API key. |
 
 Every folder has its own `README.md` that explains its job. Rules for AI coding agents are in each part's `AGENTS.md`.
 
 ## Build order
 
-1. **Profile**: tables, tools, the `import_cv` prompt. Dashboard: login, Home, Profile, Review.
+1. **Profile**: tables, tools, the `import_cv` prompt. Dashboard: Home, Profile, Review.
 2. **Jobs + match**: companies and contacts, requirements, match report, gap report. Dashboard: Jobs.
 3. **Learning plan**, built on the gap report.
 4. **CV + cover letter**: proof check, version history, "sounds human" check, ATS keyword check.
