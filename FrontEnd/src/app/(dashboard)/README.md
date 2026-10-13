@@ -1,6 +1,6 @@
 # (dashboard)
 
-Every page after login.
+Every page of the dashboard, with the sidebar layout.
 
 | File / folder | Address | Shows |
 |---|---|---|
@@ -9,5 +9,3 @@ Every page after login.
 | `profile/` | `/profile` | My profile (`features/profile/`). |
 | `review/` | `/review` | Items to check (`features/review/`). |
 | `jobs/` | `/jobs`, `/jobs/[id]` | My jobs (`features/jobs/`). |
-
-If the server says the session is not valid (401), send me to `/login`.

@@ -4,8 +4,7 @@ Next.js App Router. Each folder is an address. **Pages only**: a page gets data 
 
 | Folder | Address | Easy meaning |
 |---|---|---|
-| `(auth)/login/` | `/login` | The login page. No sidebar. |
-| `(dashboard)/` | `/` and below | Everything after login, with the sidebar layout. |
+| `(dashboard)/` | `/` and below | Every page, with the sidebar layout. |
 
 Folders in `( )` are **route groups**: they share a layout, but their name is not in the address.
 
