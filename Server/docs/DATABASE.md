@@ -90,9 +90,6 @@ LEARNING
 SETTINGS
   settings (key → value, e.g. Canva master design links)
 
-LOGIN (dashboard only)
-  users ──< sessions
-
 DOCUMENTS (designed next)
   documents ──< document_claims ──> (profile items or company notes)
   banned_phrases
@@ -360,36 +357,6 @@ Known keys:
 
 ---
 
-## 7c. Login tables (dashboard only)
-
-Used only by the admin API (`/api`). The MCP tools never read them. See `docs/API.md`.
-
-### `users` (only me: one row)
-
-| Column | Type | Required | Notes |
-|---|---|---|---|
-| `email` | TEXT | yes | unique, saved in lower case |
-| `password_hash` | TEXT | yes | **scrypt** (built into `node:crypto`), with its salt and settings. **Never the plain password.** |
-
-Made only by the "create my user" script in `packages/server/scripts/`. No sign-up.
-
-### `sessions` (who is logged in)
-
-| Column | Type | Required | Notes |
-|---|---|---|---|
-| `user_id` | INTEGER | yes | → `users`, `ON DELETE CASCADE` |
-| `token_hash` | TEXT | yes | unique. **SHA-256 of the session token**, never the token itself. If someone copies the database, they can't log in. |
-| `expires_at` | TEXT | yes | 7 days after login |
-| `last_used_at` | TEXT | yes | updated on each request |
-
-Rules:
-- The token is 32 random bytes (`crypto.randomBytes`). Only the dashboard's cookie holds it.
-- A session past `expires_at` is not valid. Old sessions are deleted at server start.
-- Logout deletes the session. Changing the password deletes **all** sessions.
-- Wrong-password counting (5 tries -> wait 1 minute) lives **in memory**, not in a table. Only the HTTP server takes logins.
-
----
-
 ## 8. Document tables
 
 ### `documents` (each CV or cover letter)
@@ -481,8 +448,7 @@ Some rules need to look at other tables, so the **services** check them before s
 6. Document checks: claim, proof, number and skill checks reject. Banned phrases only warn (see part 8).
 7. Only a human can set `checked = 1` (see part 12).
    A normal edit sets `checked = 0` again, in the same transaction as the edit.
-8. Every `/api` request needs a valid, not expired session (see part 7c), except login.
-9. When only checked facts are used (matching, CVs): an achievement counts only if its job or project is checked too, and a skill proof only if its skill and its item are checked too.
+8. When only checked facts are used (matching, CVs): an achievement counts only if its job or project is checked too, and a skill proof only if its skill and its item are checked too.
 
 ---
 
@@ -499,14 +465,14 @@ Some rules need to look at other tables, so the **services** check them before s
 
 The AI calls every MCP tool. If a normal tool could set `checked = 1`, the AI could check items by mistake, and the lie guard would mean nothing.
 
-### The decision: only my browser, with my login, can check
+### The decision: only the dashboard's Review page can check
 
 **The only way: the dashboard's Review page.**
 
 1. In any AI app, the tool that saved the change answers with a `review_link`, and the AI shows it to me: for example `http://localhost:3000/review`. The Review page lists everything that waits.
-2. I open the link and log in. I see each item as text, grouped (for example one job with its achievements).
+2. I open the link. I see each item as text, grouped (for example one job with its achievements).
 3. For each item I click **Yes** (check), **Fix** (change the text, then check), or skip.
-4. The dashboard calls `POST /api/review/check` or `POST /api/review/fix` with my **login session**. The AI apps use `/mcp` and never have a session, so they can't call these addresses. See `docs/API.md`, part 5.
+4. The dashboard calls `POST /api/review/check` or `POST /api/review/fix`. The AI apps use `/mcp`, never `/api`. See `docs/API.md`, part 4.
 
 Why this way (decided 2026-10-11):
 
@@ -515,11 +481,11 @@ Why this way (decided 2026-10-11):
 | MCP elicitation (the server asks me inside the app) | **No.** Claude Code supports it; Claude Desktop (October 2026) claims to, but never shows the question and the call hangs | No |
 | I answer in the chat | Yes | **Yes**: the AI carries my answer to the server |
 | A review script in the terminal | Yes | **Yes** in Claude Code: it can run the script and type `y` |
-| **The Review page, with my password** | **Yes**: the tools only return text and a link | **No**: the AI doesn't know my password |
+| **The Review page in my browser** | **Yes**: the tools only return text and a link | **Only** if the AI can use my browser or run commands on my computer (there is no login, see below) |
 
 ### Rules
 
-1. **Only the dashboard's review addresses (with my login session) can set `checked = 1`.** No MCP tool can.
+1. **Only the dashboard's review addresses can set `checked = 1`.** No MCP tool can.
 2. **When an item is edited** with a normal tool or a normal profile address (`PATCH /api/profile/items/...`), it becomes `checked = 0` again.
 3. **When I fix an item** through `POST /api/review/fix`, it stays checked, because I made the change.
 4. **A checked item that is used as a proof can be deleted.** Its proofs are deleted with it (foreign keys with `ON DELETE CASCADE`). Then I re-run the match.
@@ -527,4 +493,4 @@ Why this way (decided 2026-10-11):
 
 ### The honest limit
 
-No design is safe against an AI that controls my computer. If I let a browser agent (like Claude in Chrome) use my logged-in browser, it could click Yes. So: **I review myself, and never ask an AI to review for me.** The design still blocks the normal risks: tool calls, mistakes, and hidden instructions in a CV, a website or a job post.
+No design is safe against an AI that controls my computer. There is no login (decided 2026-10-13), so any program on my computer can open the Review page or call `/api/review/*`. A browser agent (like Claude in Chrome) or an AI that runs commands (like Claude Code) could check items. So: **I review myself, and never ask an AI to review for me.** The design still blocks the normal risks: tool calls, mistakes, and hidden instructions in a CV, a website or a job post.

@@ -34,7 +34,7 @@ export function startHttp(app: AppContext, options: HttpOptions): Promise<Server
     await mcp(req, res, req.body); // the body is already parsed by Express
   });
 
-  // The /api routes (and their session check) come with the login step.
+  // The /api routes come with the /api/profile and /api/review step.
   web.use((_req, res) => {
     res.status(404).json({ error: "Not found" });
   });

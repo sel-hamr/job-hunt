@@ -6,7 +6,6 @@ One file per topic. `common.ts`, `profile.ts` and `index.ts` exist; the others a
 |---|---|
 | `common.ts` | building blocks: id, CV date, timestamp, source, check fields, link, country, currency, page query |
 | `errors.ts` | the error answer: `{ error, problems }` |
-| `auth.ts` | login input, session answer, `me` |
 | `stats.ts` | the Home numbers |
 | `profile.ts` | the profile and every item kind |
 | `review.ts` | review groups, check input, fix input |

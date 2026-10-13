@@ -10,5 +10,4 @@ A route only:
 
 No SQL here. No hard work here.
 
-Files (later): one per topic, `auth.ts`, `stats.ts`, `profile.ts`, `review.ts`, `jobs.ts`, plus `index.ts` that adds them all.
-The session check happens before any route runs (in `transports/http.ts`, with the auth service).
+Files (later): one per topic, `stats.ts`, `profile.ts`, `review.ts`, `jobs.ts`, plus `index.ts` that adds them all.
