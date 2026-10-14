@@ -45,7 +45,10 @@ app/ (pages)  ->  features/ (screens + actions)  ->  lib/api/  ->  Server admin 
 - Next.js (App Router, `src/` folder), TypeScript, Tailwind CSS, shadcn/ui.
 - shadcn/ui style `base-nova` (built on **Base UI**, `@base-ui/react`, not Radix). The `cn()` helper comes from the `cn` package (shadcn's own, replaces clsx + tailwind-merge).
 - Forms: shadcn **Field** pieces + react-hook-form + Zod (`@hookform/resolvers`). Tables: shadcn Table + TanStack Table. Charts: shadcn Chart (Recharts). Toasts: Sonner.
-- `layout.tsx` must wrap the app in `TooltipProvider` (the sidebar needs it).
+- `layout.tsx` wraps the app in `TooltipProvider` (the rail's tooltips need it) and adds the Sonner `Toaster`.
+- **Cache Components is on.** `fetch` is not cached, so every part that loads data sits in its own `<Suspense>` with a skeleton. Server Actions call `refresh()` (from `next/cache`) after a change.
+- Pages show API errors with `load()` and `LoadError` (`lib/api/client.ts`, `components/layout/load-error.tsx`), not with `error.tsx`: a production build hides the message of a thrown error.
+- A Base UI `Button` that renders a link needs `nativeButton={false}`.
 - No tests for now.
 
 ## Commands

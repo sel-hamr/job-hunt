@@ -116,12 +116,12 @@ All numbers in tables and cards use `tabular-nums`, so columns line up.
 
 - **Desk:** `body` is `bg-desk`, with ~24px space around the sheet on desktop. On phones the sheet fills the screen (no desk, no space).
 - **Sheet:** `bg-background`, 1px `--line` border, no shadow. Optional: two paper sheets behind it, slightly turned (see the reference). Only on desktop.
-- **Rail (sidebar):** shadcn Sidebar with `collapsible="icon"`, kept narrow (about 52px). A 1px `--line` divider on the right. Labels show as tooltips.
+- **Rail (sidebar):** our own narrow rail (`components/layout/app-rail.tsx`), 52px. A 1px `--line` divider on the right. Labels show as tooltips. Not the shadcn Sidebar: it is fixed to the window edge, so it can't sit inside the sheet.
   - Logo on top: a small mustard square with an ink border and `JH` in bold.
   - Items: Home (`LayoutDashboard`, mustard-soft fill), Profile (`UserRound`, sky), Review (`ClipboardCheck`, done), Jobs (`BriefcaseBusiness`, pink).
   - Active item: `bg-tile` across the full rail width. No color change on the icon.
   - Review count: a small square ink badge with white 10px text on the icon's top right. Hide it when the count is 0.
-  - On phones the rail becomes the shadcn Sheet menu.
+  - On phones the rail becomes a shadcn Sheet menu (a top row with the logo and a menu button). There the count sits after the "Review" label.
 - **Top bar:** 1px `--line` rule below it, 16px × 24px padding.
   - Left: page title (17px bold). On the Job page: `Jobs / <title>` with `Jobs` as a link.
   - Right: the page actions (mustard one last), then a round avatar with my initials (34px, ink border, `bg-mustard-soft`).
@@ -141,6 +141,8 @@ These are the shadcn pieces in `src/components/ui/`, restyled once so pages don'
 | Button `destructive` | White, 1.5px ink border, `text-destructive`. Hover: light red fill. Never mustard. |
 | Icon button | 36×36, 1px `--line` border (`outline` + `size="icon-lg"`). |
 | Select / dropdown trigger | Like `outline`, with a small chevron. |
+| Native select (forms) | `NativeSelect`: like Input (`bg-tile`, 1.5px ink border), with a small chevron. |
+| Checkbox | 1.5px ink border, `bg-tile`; checked = mustard with an ink tick. |
 | **Card (stat card)** | `bg-tile`, 1.5px ink border. Label (12px) → big number (28px bold) → trend line (11px, `TrendingUp` green or `TrendingDown` red). The **key card** uses `bg-mustard-soft` + `shadow-hard`. |
 | Input, Textarea | `bg-tile`, 1.5px ink border. Focus: 2px ink outline, 2px offset. Error: `--down` border and a 12px red message under it. |
 | Field / Label | Label 12px ink-2 above the input. Help text 11px ink-2. |
@@ -148,7 +150,7 @@ These are the shadcn pieces in `src/components/ui/`, restyled once so pages don'
 | Badge (chip) | Square, 1px ink border, 11px text, uppercase is OK for short words. Fill from the meaning table. |
 | Progress bar | 7px flat track in `--line`, mustard fill, `--done` at 100%. Number to the right. |
 | Tabs | Line style: text tabs, the active one gets a 2px ink line under it. No pill background. |
-| Dialog / AlertDialog / Sheet | White, 1.5px ink border, no blur shadow. Title 13px bold. Footer on a 1px `--line` rule, buttons right-aligned, the confirm button last. |
+| Dialog / AlertDialog / Sheet | White, 1.5px ink border, no blur shadow. The backdrop is a light ink tint, never blurred. Title 13px bold. Footer on a 1px `--line` rule, buttons right-aligned, the confirm button last. |
 | Dropdown menu, Select popup | White, 1px ink border, no shadow. |
 | Tooltip | Ink box, white 11–12px text, square. |
 | Toast (Sonner) | White, ink border, square, always light. Success: green tick icon. Error: red icon. Short text. |
