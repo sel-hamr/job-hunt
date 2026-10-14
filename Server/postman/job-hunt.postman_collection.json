@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "job-hunt server",
-    "description": "The requests the job-hunt server answers today: /health, and /mcp (MCP over HTTP) with its tools and prompts. Set baseUrl and mcpToken in the job-hunt environment. Docs: postman/README.md.",
+    "description": "The requests the job-hunt server answers today: /health, /mcp (MCP over HTTP) with its tools and prompts, and the dashboard's admin API (/api). Set baseUrl and mcpToken in the job-hunt environment (/api needs no token). Docs: postman/README.md.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -331,6 +331,284 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 8,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"profile_reset\",\n    \"arguments\": {\n      \"confirm\": \"DELETE MY PROFILE\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Admin API: Home and profile",
+      "item": [
+        {
+          "name": "GET /api/stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "stats"
+              ]
+            },
+            "description": "The numbers for the dashboard's Home page. Read-only.\n\nExpected answer: 200 { jobs_total, jobs_by_fit, unchecked_items, top_missing_skills }. Job numbers are 0 until build step 2.\n\n/api needs no token.\n\ncurl: postman/curl/10-api-stats.sh",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "GET /api/profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile"
+              ]
+            },
+            "description": "My profile and every item, grouped by kind. Read-only.\n\nExpected answer: 200 { profile, experiences, achievements, skills, skill_proofs, projects, education, certificates, languages }\n\n/api needs no token.\n\ncurl: postman/curl/11-api-profile-get.sh",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "PATCH /api/profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile"
+              ]
+            },
+            "description": "Change my main profile. Send only the fields to change; the first save needs a name. The profile becomes NOT checked.\n\nExpected answer: 200, the profile with checked: false\n\n/api needs no token.\n\ncurl: postman/curl/12-api-profile-update.sh",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sel\",\n  \"headline\": \"Backend Developer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /api/profile/items",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile",
+                "items"
+              ]
+            },
+            "description": "Add an item: type + the fields of that kind. It starts NOT checked, with source: manual.\n\nExpected answer: 201, the new item. A skill name you already have: 409\n\n/api needs no token.\n\ncurl: postman/curl/13-api-item-add.sh",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"skill\",\n  \"name\": \"Docker\",\n  \"category\": \"tool\",\n  \"level\": \"good\",\n  \"other_names\": [\n    \"Docker Compose\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /api/profile/items/:type/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile/items/skill/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile",
+                "items",
+                "skill",
+                "1"
+              ]
+            },
+            "description": "Change an item. The kind and id come from the address (change them to an item from 11). If it was checked, it becomes NOT checked.\n\nExpected answer: 200, the item with checked: false. Unknown id: 404\n\n/api needs no token.\n\ncurl: postman/curl/14-api-item-update.sh",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"level\": \"expert\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /api/profile/items/:type/:id (DANGER)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile/items/skill/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile",
+                "items",
+                "skill",
+                "1"
+              ]
+            },
+            "description": "Delete an item, and what the database deletes with it (achievements, skill proofs). Can't be undone: use a test database.\n\nExpected answer: 200 { deleted, also_deleted: { achievements, skill_proofs }, jobs_to_rematch }\n\n/api needs no token.\n\ncurl: postman/curl/15-api-item-delete.sh",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Admin API: review",
+      "item": [
+        {
+          "name": "GET /api/review",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "review"
+              ]
+            },
+            "description": "Everything that waits for my check, grouped (one group per job and per project, then by kind). Read-only.\n\nExpected answer: 200 { profile, groups: [{ key, title, entries: [{ item, summary }] }], total }\n\n/api needs no token.\n\ncurl: postman/curl/16-api-review-list.sh",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "POST /api/review/check",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/review/check",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "check"
+              ]
+            },
+            "description": "Set checked = true: the ONLY way. 1-50 targets, all or nothing. { type: \"profile\" } checks the profile row (no id).\n\nExpected answer: 200 { profile, items }. One unknown id: 404 and nothing is checked\n\n/api needs no token.\n\ncurl: postman/curl/17-api-review-check.sh",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"type\": \"profile\"\n    },\n    {\n      \"type\": \"skill\",\n      \"id\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /api/review/fix",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/review/fix",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "fix"
+              ]
+            },
+            "description": "Fix an item and check it, in one go (a fix I make stays checked). changes holds the item's type. For the profile: { type: \"profile\", changes }.\n\nExpected answer: 200, the fixed item with checked: true\n\n/api needs no token.\n\ncurl: postman/curl/18-api-review-fix.sh",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"changes\": {\n    \"type\": \"skill\",\n    \"level\": \"good\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"

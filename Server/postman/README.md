@@ -4,13 +4,14 @@ The requests the server answers **today**, ready to send:
 - **Postman**: import the collection and the environment, then click Send.
 - **curl**: one script per request in `curl/`.
 
-Both have the same 9 requests, in the same order, with the same bodies.
-Today the server has 2 addresses: `/health`, and `/mcp` (MCP over HTTP) with 4 tools and 1 prompt. There is no `/api` address yet.
+Both have the same 18 requests, in the same order, with the same bodies.
+Today the server has 3 doors: `/health`, `/mcp` (MCP over HTTP) with 4 tools and 1 prompt, and `/api` (the dashboard's admin API: stats, profile, review).
+The `/api` addresses: `../docs/API.md`.
 What the HTTP door does and why: `../docs/brainstorming/http-door-express.md`. The tools: `../docs/TOOLS.md`.
 
 | File | What it is |
 |---|---|
-| `job-hunt.postman_collection.json` | The Postman collection: 9 requests in 4 folders. Each request has a description and the expected answer. |
+| `job-hunt.postman_collection.json` | The Postman collection: 18 requests in 6 folders. Each request has a description and the expected answer. |
 | `job-hunt.postman_environment.json` | The Postman environment: `baseUrl` and `mcpToken` (empty: put your token there in Postman, never commit it). |
 | `curl/` | One curl script per request, plus `_settings.sh` (address and token). |
 
@@ -46,7 +47,7 @@ It prints `job-hunt MCP server ready on http://127.0.0.1:3001`.
 3. Put your `AUTH_TOKEN` in **`mcpToken`**.
 4. Open a request and click **Send**.
 
-The token is set once, on the collection (Authorization → Bearer `{{mcpToken}}`). Every `/mcp` request uses it. `/health` needs no token.
+The token is set once, on the collection (Authorization → Bearer `{{mcpToken}}`). Every `/mcp` request uses it. `/health` and `/api` need no token (their requests say "No Auth").
 
 ## 3. With curl
 
@@ -80,10 +81,22 @@ Each script prints the answer, then `HTTP <status>` on the last line.
 | 07 | profile_update | `curl/07-profile-update.sh` | Save or change the main profile row | 200, the saved profile with `checked: false`, and the review link |
 | 08 | profile_import | `curl/08-profile-import.sh` | First setup from a CV, in one call (all or nothing). Only on an **empty** profile | 200, counts per kind, `ref` → id, `not_checked` and `review_link`. On a full profile: `isError: true`, "The profile is not empty" |
 | 09 | profile_reset (**DANGER**) | `curl/09-profile-reset.sh` | Deletes the whole profile and every item, checked or not. Can't be undone | 200, `deleted` = whether there was a profile row, and counts per kind |
+| 10 | GET /api/stats | `curl/10-api-stats.sh` | The numbers for Home | 200 `{ jobs_total, jobs_by_fit, unchecked_items, top_missing_skills }` (job numbers are 0 until build step 2) |
+| 11 | GET /api/profile | `curl/11-api-profile-get.sh` | My profile and every item, by kind | 200 `{ profile, experiences, achievements, ... }` |
+| 12 | PATCH /api/profile | `curl/12-api-profile-update.sh` | Change my main profile (the first save needs a name) | 200, the profile with `checked: false` |
+| 13 | POST /api/profile/items | `curl/13-api-item-add.sh` | Add an item (here: a skill) | 201, the new item with `checked: false`. A skill you already have: 409 |
+| 14 | PATCH /api/profile/items/:type/:id | `curl/14-api-item-update.sh` | Change an item (the kind and id are in the address) | 200, the item with `checked: false`. Unknown id: 404 |
+| 15 | DELETE /api/profile/items/:type/:id (**DANGER**) | `curl/15-api-item-delete.sh` | Delete an item and what goes with it | 200 `{ deleted, also_deleted, jobs_to_rematch }` |
+| 16 | GET /api/review | `curl/16-api-review-list.sh` | What waits for my check, grouped | 200 `{ profile, groups, total }` |
+| 17 | POST /api/review/check | `curl/17-api-review-check.sh` | Check items (here: the profile and skill 1). The **only** way to set `checked = true` | 200 `{ profile, items }`, all with `checked: true`. One unknown id: 404, nothing checked |
+| 18 | POST /api/review/fix | `curl/18-api-review-fix.sh` | Fix an item and check it in one go | 200, the item with `checked: true` |
 
 A good order to try them: 01 → 02 → 03 → 09 (empty the test profile) → 08 → 06 → 07.
+For `/api` on an empty test profile: 10 → 11 → 12 → 13 → 14 → 16 → 17 → 18 → 15 → 16. Requests 14, 15, 17 and 18 use id `1`: change it to an id from 11 if yours differ.
 
 ## 5. How to read an answer
+
+`/api` answers plain JSON. An error looks like `{ "error": "...", "problems": ["field: message"] }` (400), or just `error` (404, 409).
 
 Every `/mcp` request is a **POST** with one MCP message (JSON-RPC) in the body:
 
