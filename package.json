@@ -2,6 +2,7 @@
   "name": "job-hunt",
   "private": true,
   "scripts": {
+    "dev": "node scripts/dev-all.mjs",
     "setup": "node scripts/install-all.mjs"
   }
 }
