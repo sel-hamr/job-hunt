@@ -24,7 +24,7 @@ Browser  ->  Next.js (server side)  ->  Server admin API (/api)  ->  services  -
 | Checking items | The **Review** page is where I check items (`checked = yes`). No MCP tool can do it. |
 | Where it runs | On my computer: `http://localhost:3000`. The server API listens on `127.0.0.1` only. |
 | Stack | **Next.js (App Router)** + TypeScript + **Tailwind** + **shadcn/ui**. |
-| Look | **Paper Mono** (decided on 2026-10-13): Space Mono only, ink outlines, square corners, one mustard action and one hard shadow per view. Light only. Rules and the new-page checklist: `DESIGN.md`. |
+| Look | **Paper Mono** (decided on 2026-10-13): Space Mono only, ink outlines, square corners, one mustard action and one hard shadow per view. Light and dark (dark uses the Midnight Ember colors, added 2026-10-14), with a switch in the rail. Rules and the new-page checklist: `DESIGN.md`. |
 | Reading data | **Server Components** call the API on the Next.js side. Browser JavaScript never calls the API. |
 | Changing data | **Server Actions** (add, edit, delete, check, skip). |
 | Forms | shadcn Field pieces + react-hook-form + **Zod**. |

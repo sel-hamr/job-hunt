@@ -6,13 +6,14 @@ import type { ReactNode } from "react";
 import { cn } from "cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { NAV_ITEMS, isActive } from "./nav";
+import { ThemeToggle } from "./theme";
 
 export function Logo() {
   return (
     <Link
       href="/"
       aria-label="Job Hunt home"
-      className="grid size-8 place-items-center border-[1.5px] border-ink bg-primary text-[11px] font-bold"
+      className="grid size-8 place-items-center border-[1.5px] border-ink bg-primary text-[11px] font-bold text-primary-foreground"
     >
       JH
     </Link>
@@ -50,6 +51,10 @@ export function AppRail({ reviewBadge }: { reviewBadge: ReactNode }) {
           </Tooltip>
         );
       })}
+      <Tooltip>
+        <TooltipTrigger render={<ThemeToggle className="mt-auto h-11 w-full" />} />
+        <TooltipContent side="right">Light / dark</TooltipContent>
+      </Tooltip>
     </nav>
   );
 }

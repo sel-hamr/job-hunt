@@ -11,5 +11,6 @@ The frame around every dashboard page. The look is in `../../../DESIGN.md` (part
 | `top-bar.tsx` | Page title on the left, page actions on the right, then my avatar (`profile-avatar.tsx`: my initials). |
 | `section.tsx` | `Section` (title, controls, a 1px rule below) and `EmptyState`. |
 | `load-error.tsx` | "Can't load" box with a Retry button. |
+| `theme.tsx` | `ThemeProvider` (next-themes: the `.dark` class on `<html>`) and `ThemeToggle`, the sun / moon switch at the bottom of the rail and in the phone top row. |
 
-No light/dark switch (the look is light only). No user menu (there is no login).
+No user menu (there is no login).

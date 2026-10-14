@@ -38,6 +38,29 @@ Rules:
 - **Green and red mean up and down** (or good and bad). Never use them for decoration.
 - Mostly white and black. If a screen looks colorful, remove color.
 
+### Dark mode: Midnight Ember colors
+
+Dark mode keeps every Paper Mono rule (font, outlines, square corners, one loud action, one hard shadow) and swaps **only the colors**, to the Midnight Ember palette. The token names stay the same, so pages use the same classes and never write `dark:`. Decided on 2026-10-14.
+
+| Token | Light | Dark | Midnight Ember name |
+|---|---|---|---|
+| `--desk` | `#e7e3dd` | `#0a0a0a` | INK (behind the sheet) |
+| `--sheet` | `#ffffff` | `#171717` | CANVAS |
+| `--tile` | `#f7f7f6` | `#1f1f1f` | a step above canvas |
+| `--ink` | `#141414` | `#e5e5e5` | TEXT (text and outlines) |
+| `--ink-2` | `#5b5b58` | `#a3a3a3` | MUTED |
+| `--line`, `--grid` | `#e2e0dc`, `#dcdcd8` | `#404040` | LINE |
+| `--mustard` | `#dcc76a` | `#ff8c19` | EMBER: the one loud color |
+| `--mustard-soft` | `#f1e9bd` | `#3a2410` | ember tint (key card, "some gaps") |
+| `--gold` | `#c9a93a` | `#ff8c19` | ember meta lines, like an eyebrow |
+| `--on-mustard` | `#141414` | `#0a0a0a` | text on the loud color: always dark |
+
+The meaning colors stay (green and red still mean up and down) but get darker in dark mode, so light text stays readable on them: `--done #1f3d26`, `--pink #45221f`, `--sky #1d3138`, `--up #4fbf78`, `--down #ef6a5f`.
+
+- **The switch:** a sun / moon button at the bottom of the rail (and in the phone top row). The first visit follows the computer's setting; a click is saved in the browser (`next-themes`, the `.dark` class on `<html>`).
+- `--veil` is the backdrop behind dialogs and sheets: light ink 10% / black 60%. Never blurred.
+- Text on mustard or ember uses `text-primary-foreground` (it is `--on-mustard`), never `text-ink`.
+
 ### Shape tokens
 
 | Token | Value | Tailwind |
@@ -126,7 +149,7 @@ All numbers in tables and cards use `tabular-nums`, so columns line up.
   - Left: page title (17px bold). On the Job page: `Jobs / <title>` with `Jobs` as a link.
   - Right: the page actions (mustard one last), then a round avatar with my initials (34px, ink border, `bg-mustard-soft`).
   - No search box in v1 (there is no search API yet).
-- No dark mode. The style is light only (`color-scheme: light`).
+- Light and dark: see part 1, "Dark mode". The switch sits at the bottom of the rail.
 
 ## 5. Components
 
@@ -243,8 +266,8 @@ const spaceMono = Space_Mono({
 
 ### `src/app/globals.css`: the theme
 
-1. Delete the `.dark { ... }` block (light only). **Keep** the `@custom-variant dark` line: without it, the `dark:` classes in `ui/` follow the OS dark mode. We never add the `.dark` class, so they never apply.
-2. Replace the `:root { ... }` block with:
+1. The `.dark { ... }` block holds the Midnight Ember colors (part 1, "Dark mode"). The `@custom-variant dark` line makes `dark:` follow that class, not the OS. The `ui/` pieces have no `dark:` classes: the tokens switch, the classes stay.
+2. The `:root { ... }` block (light) started as:
 
 ```css
 :root {

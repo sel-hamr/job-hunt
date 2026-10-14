@@ -2,10 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* The look: Paper Mono. Rules in ../../DESIGN.md. Light only. */
+/* The look: Paper Mono. Rules in ../../DESIGN.md. Light and dark. */
 
-/* Keep this: without it, the dark: classes in ui/ follow the OS dark mode.
-   We never add the .dark class, so dark: styles never apply. */
+/* Dark mode follows the .dark class on <html> (set by next-themes), not the OS directly.
+   The ui/ pieces have no dark: classes: the tokens below switch, the classes stay the same. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -89,6 +89,8 @@
   --down: #d6493f;
   --done: #8fd486;
   --gold: #c9a93a;
+  --on-mustard: #141414; /* text on mustard: always dark, in both themes */
+  --veil: rgb(20 20 20 / 0.1); /* behind dialogs and sheets */
 
   /* shadcn names, pointed at the palette */
   --background: var(--sheet);
@@ -98,7 +100,7 @@
   --popover: var(--sheet);
   --popover-foreground: var(--ink);
   --primary: var(--mustard);
-  --primary-foreground: var(--ink);
+  --primary-foreground: var(--on-mustard);
   --secondary: var(--tile);
   --secondary-foreground: var(--ink);
   --muted: var(--tile);
@@ -123,6 +125,36 @@
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--line);
   --sidebar-ring: var(--ink);
+}
+
+/* Dark mode: the Midnight Ember colors (DESIGN.md, part 1, "Dark mode").
+   Same token names, so every class still works. Ember (#FF8C19) takes mustard's place
+   as the one loud color; the meaning colors (green, red, tints) get darker so light text stays readable. */
+.dark {
+  color-scheme: dark;
+
+  /* Midnight Ember palette */
+  --desk: #0a0a0a; /* INK: behind the sheet */
+  --sheet: #171717; /* CANVAS */
+  --tile: #1f1f1f; /* a step above canvas: cards, inputs, hover */
+  --ink: #e5e5e5; /* TEXT: text and outlines */
+  --ink-2: #a3a3a3; /* MUTED */
+  --line: #404040; /* LINE */
+  --grid: #404040;
+  --mustard: #ff8c19; /* EMBER: the main action */
+  --mustard-soft: #3a2410; /* ember tint: the key card, "some gaps" */
+  --gold: #ff8c19; /* meta lines in ember, like the eyebrow text */
+  --on-mustard: #0a0a0a;
+
+  /* Meaning colors, darkened for the dark canvas */
+  --sky: #1d3138;
+  --sky-ink: #5f9aa8;
+  --pink: #45221f;
+  --done: #1f3d26;
+  --up: #4fbf78;
+  --down: #ef6a5f;
+
+  --veil: rgb(0 0 0 / 0.6);
 }
 
 @layer base {

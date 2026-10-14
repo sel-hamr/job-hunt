@@ -49,6 +49,7 @@ app/ (pages)  ->  features/ (screens + actions)  ->  lib/api/  ->  Server admin 
 - **Cache Components is on.** `fetch` is not cached, so every part that loads data sits in its own `<Suspense>` with a skeleton. Server Actions call `refresh()` (from `next/cache`) after a change.
 - Pages show API errors with `load()` and `LoadError` (`lib/api/client.ts`, `components/layout/load-error.tsx`), not with `error.tsx`: a production build hides the message of a thrown error.
 - A Base UI `Button` that renders a link needs `nativeButton={false}`.
+- **Light and dark.** Use the token classes only; never write `dark:` in a page or in `ui/`. A color that must differ in dark mode is a token in `globals.css` (both blocks) and a row in `DESIGN.md`.
 - No tests for now.
 
 ## Commands
