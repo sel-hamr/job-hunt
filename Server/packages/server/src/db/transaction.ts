@@ -1,7 +1,9 @@
 import type { Db } from "./connection.ts";
 
 // Runs `work` inside a transaction: all of it is saved, or none of it.
+// Inside another transaction, it just runs `work`: the outer one saves or undoes it all.
 export function inTransaction<T>(db: Db, work: () => T): T {
+  if (db.isTransaction) return work();
   db.exec("BEGIN");
   try {
     const result = work();

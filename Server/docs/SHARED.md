@@ -128,13 +128,14 @@ Server/packages/shared/
 
 | Schema | Fields |
 |---|---|
-| `ApiErrorSchema` | `error` (short text), `problems` (list of texts, maybe empty) |
+| `ApiErrorSchema` | `error` (short text), `problems` (optional list of texts, only with 400: `field: message`) |
 
 ### `stats.ts`
 
 | Schema | Fields |
 |---|---|
-| `StatsSchema` | `jobs_total`, `jobs_by_fit` (`good_fit`, `some_gaps`, `big_gaps`, `not_matched`), `unchecked_items`, `top_missing_skills` (list of `{ keyword, jobs, must_have }`, max 5) |
+| `MissingSkillSchema` | `keyword`, `jobs` (how many jobs ask for it), `must_have` (in how many it is a must-have) |
+| `StatsSchema` | `jobs_total`, `jobs_by_fit` (`good_fit`, `some_gaps`, `big_gaps`, `not_matched`), `unchecked_items` (the profile row counts too), `top_missing_skills` (list of `MissingSkill`, max 5) |
 
 ### `profile.ts`
 
@@ -175,10 +176,14 @@ Shape checks that live **here** (they need only the item itself):
 
 | Schema | Fields |
 |---|---|
-| `ReviewGroupSchema` | `title` (for example "Backend Developer @ Acme"), `items` (list of `ProfileItem`) |
-| `ReviewListSchema` | `groups` (list of `ReviewGroup`), `total` |
-| `CheckInputSchema` | `items`: list of `{ type, id }`, 1-50 items |
-| `FixInputSchema` | `type`, `id`, the fields to change (like `ProfileItemUpdateInput`) |
+| `ReviewEntrySchema` | `item` (a `ProfileItem`), `summary` (one line to read, made by the server; a proof names its skill and its item) |
+| `ReviewGroupSchema` | `key` (stable, like `experience-3` or `skills`), `title` (for example "Backend Developer @ Acme"), `entries` (list of `ReviewEntry`) |
+| `ReviewListSchema` | `profile` (the `Profile`, only when it waits for a check, else `null`), `groups` (list of `ReviewGroup`), `total` (items + the profile) |
+| `ReviewTargetSchema` | `{ type, id }` (an item) or `{ type: "profile" }` (no id: there is one profile) |
+| `CheckInputSchema` | `items`: list of `ReviewTarget`, 1-50 |
+| `CheckResultSchema` | `profile` (set when it was in the list, else `null`), `items` (the checked items) |
+| `FixInputSchema` | `{ id, changes }` (`changes` is a `ProfileItemUpdateInput`, so it holds the `type`) or `{ type: "profile", changes }` (`changes` is a `ProfileUpdateInput`) |
+| `FixResultSchema` | the fixed, checked `Profile` or `ProfileItem` |
 
 ### `jobs.ts`
 
