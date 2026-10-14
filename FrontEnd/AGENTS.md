@@ -1,6 +1,7 @@
 # FrontEnd: rules for AI agents
 
 Read `README.md` first. It has the plan and all decisions.
+**Before you build or change any page, form or feature flow, read `DESIGN.md`** (the look: colors, font, components, and the checklist for a new page).
 Server rules: `Server/AGENTS.md`. Admin API list: `Server/docs/API.md`. Data shapes (`@jobhunt/shared`): `Server/docs/SHARED.md`.
 
 ## What this is
@@ -9,11 +10,13 @@ A Next.js admin dashboard, only for me, on my computer. It reads and changes dat
 
 ## How to work here
 
-- **The user writes the code by hand.** Explain one small step at a time and **suggest** code in the chat. Don't create or edit source files unless the user clearly asks.
+- **You (the agent) write the dashboard code.** Create and edit the source files yourself. Work in small steps, and after each step explain in simple English what changed and why.
+- Before you say a step is done, run `npm run lint`, then `npx next typegen` and `npx tsc --noEmit`. Fix what they report.
 - Before you add a file, read the `README.md` in that folder. Put code where the README says.
 - If you add a folder, add a `README.md` to it in the same easy style.
 - Talk in **simple English**: short sentences, no hard words.
 - Ask first before you add a dependency.
+- Follow `DESIGN.md`. Use its Tailwind classes, never a hex code in a component. A new look (a new state color, a new shared piece) goes into `DESIGN.md` first.
 
 ## Layers (always follow)
 
@@ -47,13 +50,13 @@ app/ (pages)  ->  features/ (screens + actions)  ->  lib/api/  ->  Server admin 
 
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the dashboard at `http://localhost:3000`. |
-| `npm run build` | Build for production. |
-| `npm run lint` | ESLint. |
-| `npx next typegen` | Make the route types (`LayoutProps`, `PageProps`). Run it before `npx tsc --noEmit`. |
-| `npx shadcn@latest add <name>` | Add a shadcn/ui piece to `src/components/ui/`. |
+| Command                        | What it does                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| `npm run dev`                  | Start the dashboard at `http://localhost:3000`.                                      |
+| `npm run build`                | Build for production.                                                                |
+| `npm run lint`                 | ESLint.                                                                              |
+| `npx next typegen`             | Make the route types (`LayoutProps`, `PageProps`). Run it before `npx tsc --noEmit`. |
+| `npx shadcn@latest add <name>` | Add a shadcn/ui piece to `src/components/ui/`.                                       |
 
 Note: `npm audit` shows "high" issues from `braces`, inside dev tools only (shadcn CLI, ESLint plugin). **Don't run `npm audit fix --force`**: it downgrades Next's ESLint config and shadcn.
 

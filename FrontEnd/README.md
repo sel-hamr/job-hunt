@@ -23,7 +23,8 @@ Browser  ->  Next.js (server side)  ->  Server admin API (/api)  ->  services  -
 | Login | **None.** Only me, on my own computer. |
 | Checking items | The **Review** page is where I check items (`checked = yes`). No MCP tool can do it. |
 | Where it runs | On my computer: `http://localhost:3000`. The server API listens on `127.0.0.1` only. |
-| Stack | **Next.js (App Router)** + TypeScript + **Tailwind** + **shadcn/ui** (same look as the extension). |
+| Stack | **Next.js (App Router)** + TypeScript + **Tailwind** + **shadcn/ui**. |
+| Look | **Paper Mono** (decided on 2026-10-13): Space Mono only, ink outlines, square corners, one mustard action and one hard shadow per view. Light only. Rules and the new-page checklist: `DESIGN.md`. |
 | Reading data | **Server Components** call the API on the Next.js side. Browser JavaScript never calls the API. |
 | Changing data | **Server Actions** (add, edit, delete, check, skip). |
 | Forms | shadcn Field pieces + react-hook-form + **Zod**. |
@@ -43,10 +44,12 @@ Browser  ->  Next.js (server side)  ->  Server admin API (/api)  ->  services  -
 
 ## Folders
 
-Rules for AI agents: `AGENTS.md`. Each folder has its own `README.md`.
+Rules for AI agents: `AGENTS.md`. The look: `DESIGN.md`. Each folder has its own `README.md`.
 
 ```
 FrontEnd/
+├── DESIGN.md            the look + checklist for a new page
+├── docs/design/         the reference picture
 ├── public/              images, favicon
 └── src/
     ├── app/             pages (routes) only
