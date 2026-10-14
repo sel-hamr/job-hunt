@@ -2,14 +2,18 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* The look: Paper Mono. Rules in ../../DESIGN.md. Light only. */
+
+/* Keep this: without it, the dark: classes in ui/ follow the OS dark mode.
+   We never add the .dark class, so dark: styles never apply. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-space-mono), ui-monospace, Menlo, monospace;
+  --font-mono: var(--font-space-mono), ui-monospace, Menlo, monospace;
+  --font-heading: var(--font-space-mono), ui-monospace, Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,92 +43,106 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+
+  /* every rounded-* is 2px; rounded-full stays round */
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+
+  /* Paper Mono names, as Tailwind classes (bg-desk, text-gold, ...) */
+  --color-desk: var(--desk);
+  --color-tile: var(--tile);
+  --color-ink: var(--ink);
+  --color-grid: var(--grid);
+  --color-mustard-soft: var(--mustard-soft);
+  --color-sky: var(--sky);
+  --color-sky-ink: var(--sky-ink);
+  --color-pink: var(--pink);
+  --color-up: var(--up);
+  --color-done: var(--done);
+  --color-gold: var(--gold);
+
+  --shadow-hard: 4px 4px 0 var(--ink);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  color-scheme: light;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Paper Mono palette */
+  --desk: #e7e3dd;
+  --sheet: #ffffff;
+  --tile: #f7f7f6;
+  --ink: #141414;
+  --ink-2: #5b5b58;
+  --line: #e2e0dc;
+  --grid: #dcdcd8;
+  --mustard: #dcc76a;
+  --mustard-soft: #f1e9bd;
+  --sky: #d3ebf1;
+  --sky-ink: #6aa9b8;
+  --pink: #f6c9c4;
+  --up: #2f9e57;
+  --down: #d6493f;
+  --done: #8fd486;
+  --gold: #c9a93a;
+
+  /* shadcn names, pointed at the palette */
+  --background: var(--sheet);
+  --foreground: var(--ink);
+  --card: var(--tile);
+  --card-foreground: var(--ink);
+  --popover: var(--sheet);
+  --popover-foreground: var(--ink);
+  --primary: var(--mustard);
+  --primary-foreground: var(--ink);
+  --secondary: var(--tile);
+  --secondary-foreground: var(--ink);
+  --muted: var(--tile);
+  --muted-foreground: var(--ink-2);
+  --accent: var(--tile);
+  --accent-foreground: var(--ink);
+  --destructive: var(--down);
+  --border: var(--line);
+  --input: var(--ink);
+  --ring: var(--ink);
+  --chart-1: var(--ink);
+  --chart-2: var(--sky);
+  --chart-3: var(--mustard);
+  --chart-4: var(--done);
+  --chart-5: var(--pink);
+  --radius: 2px;
+  --sidebar: var(--sheet);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--sheet);
+  --sidebar-accent: var(--tile);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--ink);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
   }
   html {
     @apply font-sans;
   }
+  body {
+    @apply bg-desk text-foreground text-[13px] leading-[1.55];
+  }
+}
+
+@utility bg-hatch {
+  background:
+    repeating-linear-gradient(135deg, var(--sky-ink) 0 1px, transparent 1px 6px),
+    var(--sky);
 }
