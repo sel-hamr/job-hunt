@@ -64,7 +64,6 @@ export const FIELDS: Record<FormKind, FieldSpec[]> = {
   achievement: [
     { name: "parent", label: "Belongs to", input: "parent", required: true },
     { name: "text", label: "Text", input: "long", required: true },
-    { name: "number", label: "Number", input: "text", hint: 'Like "40%", so it can be checked' },
     { name: "position", label: "Order in the list", input: "order", required: true, hint: "0 = first" },
   ],
   skill: [
