@@ -3,4 +3,6 @@
 | Folder / file | Job |
 |---|---|
 | `api/` | The **only** code that calls the server's admin API. |
-| `utils.ts` (later) | The `cn()` helper that shadcn/ui needs. |
+| `action-result.ts` | `ActionResult`: what every Server Action answers (`ok`, or `error` + `problems`). Plain data, used in the browser too. |
+
+The `cn()` helper comes from the `cn` package.
