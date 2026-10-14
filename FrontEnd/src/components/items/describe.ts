@@ -66,7 +66,8 @@ export function detailsOf(item: ProfileItem, data?: ProfileWithItems): string {
         item.experience_id != null
           ? data?.experiences.find((e) => e.id === item.experience_id)
           : data?.projects.find((p) => p.id === item.project_id);
-      return join(item.number, parent && `in ${nameOf(parent)}`);
+      // The number is already in the text, so only the job or project it belongs to.
+      return parent ? nameOf(parent) : "";
     }
     case "skill":
       return join(item.category, item.level, item.other_names.length > 0 && `also: ${item.other_names.join(", ")}`);

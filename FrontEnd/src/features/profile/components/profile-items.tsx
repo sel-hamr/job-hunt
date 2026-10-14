@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "cn";
 import { PROFILE_ITEM_TYPES, type ProfileItem, type ProfileItemType, type ProfileWithItems } from "@jobhunt/shared";
 import { CheckChip } from "@/components/items/check-chip";
 import { KIND_LABELS, detailsOf, nameOf } from "@/components/items/describe";
@@ -67,6 +68,8 @@ export function ProfileItems({ data }: { data: ProfileWithItems }) {
   const items = LIST_OF[kind](data);
   const label = KIND_LABELS[kind];
   const blocked = NEEDS_FIRST[kind]?.(data) ?? null;
+  // An achievement is one text: no Details column, its job or project goes in the meta line.
+  const oneText = kind === "achievement";
 
   function confirmDelete() {
     if (!deleting) return;
@@ -113,7 +116,7 @@ export function ProfileItems({ data }: { data: ProfileWithItems }) {
             <TableHeader>
               <TableRow>
                 <TableHead>{label.one}</TableHead>
-                <TableHead>Details</TableHead>
+                {!oneText && <TableHead>Details</TableHead>}
                 <TableHead>Status</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -123,15 +126,17 @@ export function ProfileItems({ data }: { data: ProfileWithItems }) {
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="max-w-88 min-w-48 align-top whitespace-normal">
+                  <TableCell className={cn("min-w-48 align-top whitespace-normal", !oneText && "max-w-88")}>
                     <p className="text-[13px]">{nameOf(item, data)}</p>
                     <p className="mt-0.5 text-[11px] text-gold">
-                      {item.source} · #{item.id}
+                      {[item.source, `#${item.id}`, oneText && detailsOf(item, data)].filter(Boolean).join(" · ")}
                     </p>
                   </TableCell>
-                  <TableCell className="max-w-88 min-w-40 align-top text-xs whitespace-normal text-muted-foreground">
-                    {detailsOf(item, data)}
-                  </TableCell>
+                  {!oneText && (
+                    <TableCell className="max-w-88 min-w-40 align-top text-xs whitespace-normal text-muted-foreground">
+                      {detailsOf(item, data)}
+                    </TableCell>
+                  )}
                   <TableCell className="align-top">
                     <CheckChip checked={item.checked} />
                   </TableCell>
