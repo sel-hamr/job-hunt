@@ -125,8 +125,7 @@ const achievementLinkFields = {
   project_id: IdSchema.nullable(),
 };
 const achievementFields = {
-  text: Text,
-  number: OptionalText, // like "40%", so the number can be checked
+  text: Text, // numbers stay inside the text, like "Made the API 40% faster"
   position: z.number().int().min(0), // order in the list
 };
 const oneAchievementLink = (v: { experience_id?: number | null; project_id?: number | null }) =>
@@ -140,7 +139,7 @@ export type Achievement = z.infer<typeof AchievementSchema>;
 
 export const AchievementCreateInputSchema = z
   .object({ type: z.literal("achievement"), ...achievementLinkFields, ...achievementFields })
-  .partial({ experience_id: true, project_id: true, number: true })
+  .partial({ experience_id: true, project_id: true })
   .refine(oneAchievementLink, ONE_ACHIEVEMENT_LINK);
 export type AchievementCreateInput = z.infer<typeof AchievementCreateInputSchema>;
 
@@ -367,9 +366,7 @@ export type ProfileWithItems = z.infer<typeof ProfileWithItemsSchema>;
 const Ref = z.string().trim().min(1);
 
 // The order (position) comes from the place in the list, so it is not sent.
-const ImportAchievementSchema = z
-  .object({ text: achievementFields.text, number: achievementFields.number })
-  .partial({ number: true });
+const ImportAchievementSchema = z.object({ text: achievementFields.text });
 
 const ImportExperienceSchema = z
   .object({ ref: Ref, ...experienceItemFields, achievements: z.array(ImportAchievementSchema) })
