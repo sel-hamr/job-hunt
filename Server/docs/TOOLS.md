@@ -56,7 +56,7 @@ Nested, like a CV. Nothing has an `id` yet, so items get a short `ref` name that
   "experiences": [
     { "ref": "acme", "company": "Acme", "position": "Backend Developer",
       "experience_type": "full-time", "start_date": "2022-03",
-      "achievements": [{ "text": "Made the API 40% faster", "number": "40%" }] }
+      "achievements": [{ "text": "Made the API 40% faster" }] }
   ],
   "projects": [
     { "ref": "jobhunt", "name": "Job Hunt", "links": [{ "label": "GitHub", "url": "https://..." }],

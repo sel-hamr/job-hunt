@@ -56,7 +56,7 @@ function summaryOf(item: ProfileItem, all: ProfileWithItems): string {
     case "experience":
       return `${item.position} @ ${item.company}${dates(item.start_date, item.end_date)}`;
     case "achievement":
-      return item.text; // the number is already in the text
+      return item.text;
     case "skill":
       return `${item.name} (${item.category}, ${item.level})`;
     case "skill_proof":

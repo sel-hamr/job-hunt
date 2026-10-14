@@ -196,7 +196,7 @@ Based on the [JSON Resume](https://jsonresume.org/schema) standard, changed for 
 |---|---|
 | `profile` (one row) | name, headline, email, phone, city, country, summary, links (GitHub, LinkedIn, website) |
 | `experiences` | company, position, type (`full-time` / `part-time` / `intern` / `freelance` / `volunteer`), city, remote (yes/no), start, end, summary |
-| `achievements` | belongs to (one experience **or** one project), text, number (optional, e.g. "40%") |
+| `achievements` | belongs to (one experience **or** one project), text (numbers stay inside it, e.g. "40% faster") |
 | `skills` | name, other names (e.g. "Node", "NodeJS", used by the ATS check), category (`language` / `framework` / `tool` / `soft skill`), level (`beginner` / `good` / `expert`) |
 | `skill_proofs` | skill, proof item (an experience, project, education or certificate) |
 | `projects` | name, my role, description, links (GitHub, live site), start, end |

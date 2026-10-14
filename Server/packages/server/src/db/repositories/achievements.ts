@@ -8,7 +8,6 @@ type AchievementRow = {
   experience_id: number | null;
   project_id: number | null;
   text: string;
-  number: string | null;
   position: number;
   source: string;
   checked: number;
@@ -26,7 +25,6 @@ function toAchievement(row: AchievementRow): Achievement {
     experience_id: row.experience_id,
     project_id: row.project_id,
     text: row.text,
-    number: row.number,
     position: row.position,
     source: row.source as Source,
     checked: toBool(row.checked),
@@ -39,14 +37,13 @@ function toAchievement(row: AchievementRow): Achievement {
 export function insertAchievement(db: Db, input: AchievementCreateInput, source: Source): Achievement {
   const result = db
     .prepare(
-      `INSERT INTO achievements (experience_id, project_id, text, number, position, source)
-       VALUES (:experience_id, :project_id, :text, :number, :position, :source)`,
+      `INSERT INTO achievements (experience_id, project_id, text, position, source)
+       VALUES (:experience_id, :project_id, :text, :position, :source)`,
     )
     .run({
       experience_id: orNull(input.experience_id),
       project_id: orNull(input.project_id),
       text: input.text,
-      number: orNull(input.number),
       position: input.position,
       source,
     });
@@ -69,7 +66,6 @@ export function listAchievements(db: Db): Achievement[] {
 // The job / project link can't change (see AchievementUpdateInputSchema).
 const columns = {
   text: "text",
-  number: "number",
   position: "position",
 } as const satisfies Record<keyof AchievementChanges, string>;
 

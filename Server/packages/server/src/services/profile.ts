@@ -384,7 +384,7 @@ export function importProfile(db: Db, input: ProfileImportInput): ProfileImportR
     // The order (position) is the place in the list.
     const addAchievements = (
       link: { experience_id: number } | { project_id: number },
-      list: { text: string; number?: string | null }[] = [],
+      list: { text: string }[] = [],
     ) => {
       list.forEach((achievement, position) => {
         achievements.insertAchievement(db, { type: "achievement", ...link, ...achievement, position }, "imported");

@@ -146,7 +146,7 @@ Choice lists: `EXPERIENCE_TYPES`, `SKILL_CATEGORIES`, `SKILL_LEVELS`, `LANGUAGE_
 | `ProfileSchema` | `id` (always `1`), `name`, `headline`, `email`, `phone`, `city`, `country`, `summary`, `links` (list of `Link`), `checked`, `checked_at`, timestamps. No `source`. |
 | `ProfileUpdateInputSchema` | the profile fields, all optional, at least one (`PATCH /api/profile`) |
 | `ExperienceSchema` | `company`, `position`, `experience_type` (the database column `type`, see below), `city`, `remote` (bool), `start_date`, `end_date` (`null` = now), `summary` |
-| `AchievementSchema` | `experience_id` **or** `project_id` (exactly one), `text`, `number`, `position` |
+| `AchievementSchema` | `experience_id` **or** `project_id` (exactly one), `text`, `position`. No separate `number`: it stays inside `text` (removed by migration `002`). |
 | `SkillSchema` | `name`, `other_names` (list), `category`, `level` |
 | `SkillProofSchema` | `skill_id` + exactly one of `experience_id` / `project_id` / `education_id` / `certificate_id`. No update input: delete it and add a new one. |
 | `ProjectSchema` | `name`, `role`, `description`, `links`, `start_date`, `end_date` |
