@@ -5,6 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   srcDir: 'src',
   modules: ['@wxt-dev/module-react'],
+  // 3000 is the dashboard and 3001 the server, so the dev server takes 3002.
+  dev: { server: { port: 3002 } },
   vite: () => ({
     plugins: [tailwindcss()],
   }),
