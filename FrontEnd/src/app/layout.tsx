@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Space_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/layout/theme";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const spaceMono = Space_Mono({
@@ -15,8 +18,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${spaceMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    // suppressHydrationWarning: next-themes sets the .dark class on <html> before React loads.
+    <html lang="en" className={`${spaceMono.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="flex min-h-full flex-col bg-desk">
+        <ThemeProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+          <Toaster position="bottom-right" />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

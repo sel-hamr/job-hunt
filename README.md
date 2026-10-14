@@ -76,8 +76,6 @@ Each step works on its own. The extension can be built any time, but it needs st
 
 ## Getting started
 
-There are no run commands for the server or the extension yet. They will be listed here when they exist.
-
 Needs **Node.js 24 or newer** (for `node:sqlite`).
 
 Install the dependencies of every part (`Server/`, `FrontEnd/`, `Extension/`) with one command, from the repo root:
@@ -86,13 +84,20 @@ Install the dependencies of every part (`Server/`, `FrontEnd/`, `Extension/`) wi
 npm run setup
 ```
 
-The dashboard scaffold can already run:
+Then make `Server/packages/server/.env` from `.env.example` and set `AUTH_TOKEN` (32+ characters).
+
+Run every part in dev mode, side by side in one terminal, from the repo root:
 
 ```bash
-cd FrontEnd
-npm install
-npm run dev     # http://localhost:3000
+npm run dev                      # every part that is ready: server and dashboard (extension once it has code)
+npm run dev -- server frontend   # only the parts you name
 ```
+
+- `server`: the server with `TRANSPORT=http`, so `/mcp` and `/api` listen on `http://127.0.0.1:3001`.
+- `frontend`: the dashboard on `http://localhost:3000`.
+- `extension`: WXT dev mode on port 3002. It opens a browser with the extension loaded. Plain `npm run dev` skips it until `Extension/src/entrypoints/` has code (today it only has READMEs); `npm run dev -- extension` runs it anyway.
+
+Each line starts with the part's name. Ctrl+C stops them all. If one part stops, the others stop too.
 
 ## Not planned
 

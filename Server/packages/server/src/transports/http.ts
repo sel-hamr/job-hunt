@@ -4,6 +4,7 @@ import { createMcpExpressApp } from "@modelcontextprotocol/express";
 import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import type { ErrorRequestHandler, RequestHandler } from "express";
+import { createApiRouter } from "../api/index.ts";
 import { createServer, type AppContext } from "../server.ts";
 
 export type HttpOptions = {
@@ -34,7 +35,8 @@ export function startHttp(app: AppContext, options: HttpOptions): Promise<Server
     await mcp(req, res, req.body); // the body is already parsed by Express
   });
 
-  // The /api routes come with the /api/profile and /api/review step.
+  web.use("/api", createApiRouter(app));
+
   web.use((_req, res) => {
     res.status(404).json({ error: "Not found" });
   });

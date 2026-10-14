@@ -8,4 +8,4 @@ Next.js App Router. Each folder is an address. **Pages only**: a page gets data 
 
 Folders in `( )` are **route groups**: they share a layout, but their name is not in the address.
 
-Files here later: `layout.tsx` (the root layout), `globals.css` (Tailwind + theme, light and dark), `not-found.tsx`.
+Files here: `layout.tsx` (the root layout: font, desk background, `TooltipProvider`, `Toaster`), `globals.css` (Tailwind + the Paper Mono theme: light, and dark with the Midnight Ember colors). The root layout also wraps the app in `ThemeProvider` (`components/layout/theme.tsx`).

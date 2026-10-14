@@ -44,7 +44,7 @@ if (config.transport.kind === "http") {
       http.close(() => resolve());
       http.closeAllConnections();
     });
-  console.error(`job-hunt MCP server ready on http://${host}:${port} (/mcp, /health)`);
+  console.error(`job-hunt MCP server ready on http://${host}:${port} (/mcp, /api, /health)`);
 } else {
   const stdio = startStdio(app);
   closeDoor = () => stdio.close();

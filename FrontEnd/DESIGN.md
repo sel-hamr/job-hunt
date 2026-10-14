@@ -38,6 +38,29 @@ Rules:
 - **Green and red mean up and down** (or good and bad). Never use them for decoration.
 - Mostly white and black. If a screen looks colorful, remove color.
 
+### Dark mode: Midnight Ember colors
+
+Dark mode keeps every Paper Mono rule (font, outlines, square corners, one loud action, one hard shadow) and swaps **only the colors**, to the Midnight Ember palette. The token names stay the same, so pages use the same classes and never write `dark:`. Decided on 2026-10-14.
+
+| Token | Light | Dark | Midnight Ember name |
+|---|---|---|---|
+| `--desk` | `#e7e3dd` | `#0a0a0a` | INK (behind the sheet) |
+| `--sheet` | `#ffffff` | `#171717` | CANVAS |
+| `--tile` | `#f7f7f6` | `#1f1f1f` | a step above canvas |
+| `--ink` | `#141414` | `#e5e5e5` | TEXT (text and outlines) |
+| `--ink-2` | `#5b5b58` | `#a3a3a3` | MUTED |
+| `--line`, `--grid` | `#e2e0dc`, `#dcdcd8` | `#404040` | LINE |
+| `--mustard` | `#dcc76a` | `#ff8c19` | EMBER: the one loud color |
+| `--mustard-soft` | `#f1e9bd` | `#3a2410` | ember tint (key card, "some gaps") |
+| `--gold` | `#c9a93a` | `#ff8c19` | ember meta lines, like an eyebrow |
+| `--on-mustard` | `#141414` | `#0a0a0a` | text on the loud color: always dark |
+
+The meaning colors stay (green and red still mean up and down) but get darker in dark mode, so light text stays readable on them: `--done #1f3d26`, `--pink #45221f`, `--sky #1d3138`, `--up #4fbf78`, `--down #ef6a5f`.
+
+- **The switch:** a sun / moon button at the bottom of the rail (and in the phone top row). The first visit follows the computer's setting; a click is saved in the browser (`next-themes`, the `.dark` class on `<html>`).
+- `--veil` is the backdrop behind dialogs and sheets: light ink 10% / black 60%. Never blurred.
+- Text on mustard or ember uses `text-primary-foreground` (it is `--on-mustard`), never `text-ink`.
+
 ### Shape tokens
 
 | Token | Value | Tailwind |
@@ -116,17 +139,17 @@ All numbers in tables and cards use `tabular-nums`, so columns line up.
 
 - **Desk:** `body` is `bg-desk`, with ~24px space around the sheet on desktop. On phones the sheet fills the screen (no desk, no space).
 - **Sheet:** `bg-background`, 1px `--line` border, no shadow. Optional: two paper sheets behind it, slightly turned (see the reference). Only on desktop.
-- **Rail (sidebar):** shadcn Sidebar with `collapsible="icon"`, kept narrow (about 52px). A 1px `--line` divider on the right. Labels show as tooltips.
+- **Rail (sidebar):** our own narrow rail (`components/layout/app-rail.tsx`), 52px. A 1px `--line` divider on the right. Labels show as tooltips. Not the shadcn Sidebar: it is fixed to the window edge, so it can't sit inside the sheet.
   - Logo on top: a small mustard square with an ink border and `JH` in bold.
   - Items: Home (`LayoutDashboard`, mustard-soft fill), Profile (`UserRound`, sky), Review (`ClipboardCheck`, done), Jobs (`BriefcaseBusiness`, pink).
   - Active item: `bg-tile` across the full rail width. No color change on the icon.
   - Review count: a small square ink badge with white 10px text on the icon's top right. Hide it when the count is 0.
-  - On phones the rail becomes the shadcn Sheet menu.
+  - On phones the rail becomes a shadcn Sheet menu (a top row with the logo and a menu button). There the count sits after the "Review" label.
 - **Top bar:** 1px `--line` rule below it, 16px × 24px padding.
   - Left: page title (17px bold). On the Job page: `Jobs / <title>` with `Jobs` as a link.
   - Right: the page actions (mustard one last), then a round avatar with my initials (34px, ink border, `bg-mustard-soft`).
   - No search box in v1 (there is no search API yet).
-- No dark mode. The style is light only (`color-scheme: light`).
+- Light and dark: see part 1, "Dark mode". The switch sits at the bottom of the rail.
 
 ## 5. Components
 
@@ -141,6 +164,8 @@ These are the shadcn pieces in `src/components/ui/`, restyled once so pages don'
 | Button `destructive` | White, 1.5px ink border, `text-destructive`. Hover: light red fill. Never mustard. |
 | Icon button | 36×36, 1px `--line` border (`outline` + `size="icon-lg"`). |
 | Select / dropdown trigger | Like `outline`, with a small chevron. |
+| Native select (forms) | `NativeSelect`: like Input (`bg-tile`, 1.5px ink border), with a small chevron. |
+| Checkbox | 1.5px ink border, `bg-tile`; checked = mustard with an ink tick. |
 | **Card (stat card)** | `bg-tile`, 1.5px ink border. Label (12px) → big number (28px bold) → trend line (11px, `TrendingUp` green or `TrendingDown` red). The **key card** uses `bg-mustard-soft` + `shadow-hard`. |
 | Input, Textarea | `bg-tile`, 1.5px ink border. Focus: 2px ink outline, 2px offset. Error: `--down` border and a 12px red message under it. |
 | Field / Label | Label 12px ink-2 above the input. Help text 11px ink-2. |
@@ -148,7 +173,7 @@ These are the shadcn pieces in `src/components/ui/`, restyled once so pages don'
 | Badge (chip) | Square, 1px ink border, 11px text, uppercase is OK for short words. Fill from the meaning table. |
 | Progress bar | 7px flat track in `--line`, mustard fill, `--done` at 100%. Number to the right. |
 | Tabs | Line style: text tabs, the active one gets a 2px ink line under it. No pill background. |
-| Dialog / AlertDialog / Sheet | White, 1.5px ink border, no blur shadow. Title 13px bold. Footer on a 1px `--line` rule, buttons right-aligned, the confirm button last. |
+| Dialog / AlertDialog / Sheet | White, 1.5px ink border, no blur shadow. The backdrop is a light ink tint, never blurred. Title 13px bold. Footer on a 1px `--line` rule, buttons right-aligned, the confirm button last. |
 | Dropdown menu, Select popup | White, 1px ink border, no shadow. |
 | Tooltip | Ink box, white 11–12px text, square. |
 | Toast (Sonner) | White, ink border, square, always light. Success: green tick icon. Error: red icon. Short text. |
@@ -241,8 +266,8 @@ const spaceMono = Space_Mono({
 
 ### `src/app/globals.css`: the theme
 
-1. Delete the `.dark { ... }` block (light only). **Keep** the `@custom-variant dark` line: without it, the `dark:` classes in `ui/` follow the OS dark mode. We never add the `.dark` class, so they never apply.
-2. Replace the `:root { ... }` block with:
+1. The `.dark { ... }` block holds the Midnight Ember colors (part 1, "Dark mode"). The `@custom-variant dark` line makes `dark:` follow that class, not the OS. The `ui/` pieces have no `dark:` classes: the tokens switch, the classes stay.
+2. The `:root { ... }` block (light) started as:
 
 ```css
 :root {

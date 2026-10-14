@@ -10,4 +10,13 @@ A route only:
 
 No SQL here. No hard work here.
 
-Files (later): one per topic, `stats.ts`, `profile.ts`, `review.ts`, `jobs.ts`, plus `index.ts` that adds them all.
+Errors: a route never catches. It lets `.parse()` and the services throw, and `errors.ts` turns the error into the answer: Zod or `RuleError` -> 400 (with `problems`), `NotFoundError` -> 404, `ConflictError` -> 409. Express 5 passes thrown errors on by itself.
+
+| File | What |
+|---|---|
+| `index.ts` | `createApiRouter(app)`: adds every route and the error handler. Mounted at `/api` in `transports/http.ts`. |
+| `errors.ts` | Service errors -> HTTP answers. |
+| `profile.ts` | `/api/profile`. |
+| `review.ts` | `/api/review`: the only addresses that set `checked = 1`. |
+
+`GET /api/stats` is one line, so it lives in `index.ts`. `jobs.ts` comes with build step 2.

@@ -52,7 +52,7 @@ function instruction(cvText: string | undefined, portfolioUrl: string | undefine
     '- Dates: "YYYY", "YYYY-MM" or "YYYY-MM-DD". A job I still have has no end_date.',
     '- country: 2 capital letters, like "MA".',
     `- Language level: one of ${list(LANGUAGE_LEVELS)}.`,
-    "- Achievements: one short sentence each. Put a number from the text (like \"40%\") in number too.",
+    "- Achievements: one short sentence each. Keep its numbers (like \"40%\") inside the text.",
     "",
     "Then reply with:",
     "1. a short count of what was saved,",

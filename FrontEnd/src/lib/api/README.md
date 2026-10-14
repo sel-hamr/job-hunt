@@ -5,7 +5,8 @@ The **only** code that calls the server's admin API.
 - Every file starts with `import "server-only"`, so it can never run in the browser.
 - The server address comes from `.env.local` (`JOBHUNT_API_URL`, for example `http://127.0.0.1:3001`). Never commit `.env.local`.
 - Checks every answer with the Zod schemas from `@jobhunt/shared`.
-- One small file per topic: `stats.ts`, `profile.ts`, `review.ts`, `jobs.ts`.
+- `client.ts`: `callApi` (one call + check the answer), `load` (for pages: data or a message), `act` (for Server Actions: an `ActionResult`).
+- One small file per topic: `stats.ts`, `profile.ts`, `review.ts` (`jobs.ts` with build step 2).
 - Errors: **400** -> show the server's list of problems in the form. Other errors -> a clear message.
 
 The list of addresses: `Server/docs/API.md`.

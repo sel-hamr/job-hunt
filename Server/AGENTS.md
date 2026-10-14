@@ -41,14 +41,20 @@ Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1
 - `profile_import`: `ProfileImportInputSchema` + `ProfileImportResultSchema` in `shared` (refs, `proven_by` and duplicate names checked in the schema), `importProfile` service (empty profile only, one transaction), the tool.
 - `profile_reset` tool (needs `confirm: "DELETE MY PROFILE"`, destructive) and `npm run reset-profile` script: empty the whole profile, so the import can run again.
 - `import_cv` prompt (`src/prompts/`): CV text or attached file + portfolio → merge → guess only the required fields → one `profile_import` → list the guesses and end with the `review_link`.
-- HTTP door (`transports/http.ts`, Express 5): `TRANSPORT=http` with `HOST`, `PORT` (3001) and `AUTH_TOKEN`; `/mcp` needs the Bearer token, `/health`, `Host` / `Origin` checks, JSON errors, `127.0.0.1` by default. `/api` answers 404 until the `/api/profile` and `/api/review` step.
+- HTTP door (`transports/http.ts`, Express 5): `TRANSPORT=http` with `HOST`, `PORT` (3001) and `AUTH_TOKEN`; `/mcp` needs the Bearer token, `/health`, `Host` / `Origin` checks, JSON errors, `127.0.0.1` by default.
+
+### Done (2026-10-14)
+
+- Admin API (`src/api/`): `/api/stats`, `/api/profile` (get, change, add, change item, delete item) and `/api/review` (list, check, fix). Errors: 400 with every problem, 404, 409. List: `docs/API.md`.
+- `services/review.ts`: the only code that sets `checked = 1` (the list groups items per job and per project). The profile row can be checked too (`{ type: "profile" }`). `services/stats.ts`: job numbers are 0 until build step 2.
+- `@jobhunt/shared`: `errors.ts`, `stats.ts`, `review.ts`.
+- `inTransaction` joins an open transaction, so "fix and check" saves in one go.
+- Dashboard (`FrontEnd/`): app shell, **Review**, **Home** and **Profile** pages, on this API.
 
 ### Next, in this order
 
-1. **`/api/profile` and `/api/review`** (list, check, fix). `/api/review/*` is the only way to set `checked = 1`.
-2. **Dashboard** (`FrontEnd/`): the **Review page** first, then Home and Profile.
-3. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
-4. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
+1. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
+2. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
 
 After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 

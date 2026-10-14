@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. The HTTP door (`/mcp`) is done too. Next: `/api/profile` and `/api/review` (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. The HTTP door (`/mcp`) and the dashboard's `/api` are done too. Next: the `profile_item_*` tools (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -56,7 +56,7 @@ Nested, like a CV. Nothing has an `id` yet, so items get a short `ref` name that
   "experiences": [
     { "ref": "acme", "company": "Acme", "position": "Backend Developer",
       "experience_type": "full-time", "start_date": "2022-03",
-      "achievements": [{ "text": "Made the API 40% faster", "number": "40%" }] }
+      "achievements": [{ "text": "Made the API 40% faster" }] }
   ],
   "projects": [
     { "ref": "jobhunt", "name": "Job Hunt", "links": [{ "label": "GitHub", "url": "https://..." }],

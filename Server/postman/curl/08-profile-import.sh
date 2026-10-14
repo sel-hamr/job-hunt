@@ -37,8 +37,7 @@ curl -sS -X POST "$BASE_URL/mcp" \
           "start_date": "2022-03",
           "achievements": [
             {
-              "text": "Made the API 40% faster",
-              "number": "40%"
+              "text": "Made the API 40% faster"
             }
           ]
         }

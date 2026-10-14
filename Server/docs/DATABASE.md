@@ -34,7 +34,7 @@ Status: building. `001_profile.sql` (part 5) exists. The other parts are still p
 
 ## 2. Migrations (how tables are created and changed)
 
-- Migrations are SQL files in `packages/server/src/db/migrations/`, numbered: `001_profile.sql`, `002_jobs.sql`, and so on.
+- Migrations are SQL files in `packages/server/src/db/migrations/`, numbered: `001_profile.sql`, `002_drop_achievement_number.sql`, `003_jobs.sql`, and so on.
 - At start, the server runs the files it has not run yet, in order.
 - The database remembers the last number it ran in `PRAGMA user_version`.
 - **Never edit a migration that has already run.** To change something, add a new file.
@@ -146,8 +146,7 @@ A `CHECK` keeps `checked` and `checked_at` together: `checked = 1` needs a `chec
 |---|---|---|---|
 | `experience_id` | INTEGER | one of two | → `experiences` |
 | `project_id` | INTEGER | one of two | → `projects` |
-| `text` | TEXT | yes | e.g. "Made the API 40% faster" |
-| `number` | TEXT | no | e.g. `40%`, so it can be checked |
+| `text` | TEXT | yes | e.g. "Made the API 40% faster". Numbers stay inside the text. |
 | `position` | INTEGER | yes | order in the list |
 
 - **Exactly one** of `experience_id` / `project_id` is filled.
