@@ -9,7 +9,7 @@ It has three parts that work together: an **MCP server**, a **Next.js dashboard*
 3. The tools check the match: for each requirement, do I have it? **Yes**, **partly** or **no**, with proof.
 4. The tools write a CV and a cover letter for that job, using **only true facts** from my profile.
 
-Status: **building step 1 (Profile)**. The server's database, profile rules and first MCP tools (`profile_get`, `profile_update`) work. What's done and what's next: [`Server/AGENTS.md`](Server/AGENTS.md#current-status).
+Status: **step 1 (Profile) is done, next is step 2 (Jobs + match)**. The server's profile tools, admin API and skill years work, and the dashboard has the Home, Profile and Review pages. What's done and what's next: [`Server/AGENTS.md`](Server/AGENTS.md#current-status).
 
 ## The main rule: never invent facts
 
