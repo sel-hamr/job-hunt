@@ -51,10 +51,13 @@ Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1
 - `inTransaction` joins an open transaction, so "fix and check" saves in one go.
 - Dashboard (`FrontEnd/`): app shell, **Review**, **Home** and **Profile** pages, on this API.
 
-### Next, in this order
+### Done (2026-10-21)
 
-1. **`profile_item_add` / `profile_item_update` / `profile_item_delete`** tools, each answering with its review link.
-2. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
+- `profile_item_add` / `profile_item_update` / `profile_item_delete` tools (`src/tools/profile/item-*.ts`), on the same services as the admin API. Add and update answer with the item's review link. The item sits in `item` / `changes`, so the tool input is a plain object at the top.
+
+### Next
+
+1. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
 
 After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 

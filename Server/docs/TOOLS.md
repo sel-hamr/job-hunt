@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, and the `import_cv` prompt. The HTTP door (`/mcp`) and the dashboard's `/api` are done too. Next: the `profile_item_*` tools (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, `profile_item_add`, `profile_item_update`, `profile_item_delete`, and the `import_cv` prompt. The HTTP door (`/mcp`) and the dashboard's `/api` are done too. Next: skill years in `profile_get` (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -27,6 +27,8 @@ The profile has 9 kinds of items. Separate add, update and delete tools for each
 So we have **one** `profile_item_add` / `profile_item_update` / `profile_item_delete` with a `type` field.
 The input schema changes with the `type`, so each kind is still checked correctly.
 
+The item sits in its own field (`item` or `changes`), not at the top of the input. An MCP tool input must be a plain object at the top. A union of 8 kinds at the top becomes `anyOf`, and some AI apps refuse that tool.
+
 ---
 
 ## 2. Profile tools (step 1)
@@ -37,8 +39,8 @@ The input schema changes with the `type`, so each kind is still checked correctl
 | `profile_update` | Save or change the main profile row (name, headline, contact, summary, links). The first save needs a `name`. | The fields to change | The profile, `checked = 0`, and the review link (`/review?type=profile`). |
 | `profile_reset` | **Delete my whole profile** and every item, checked or not. Can't be undone. Destructive. Only when I clearly ask (for example, to run `profile_import` again). Also a script for me: `npm run reset-profile`. | `confirm`: exactly `"DELETE MY PROFILE"` | What was deleted: whether there was a profile row, and counts per kind |
 | `profile_import` | **First setup from my CV and portfolio**, in one call and one transaction (all or nothing). Only works when the profile is **empty** (no profile row and no items). | The whole profile, nested (see below) | Counts per kind, the new `id` for each `ref`, how many items are not checked yet, and the `review_link` (`/review`) |
-| `profile_item_add` | Add one item. | `type` (`experience` / `achievement` / `skill` / `skill_proof` / `project` / `education` / `certificate` / `language`), `source` (`imported` / `manual`), the item fields | New item with `id`, `checked = 0` |
-| `profile_item_update` | Change one item. | `type`, `id`, the fields to change | Changed item. `checked` becomes `0`. |
+| `profile_item_add` | Add one item. | `item`: `type` (`experience` / `achievement` / `skill` / `skill_proof` / `project` / `education` / `certificate` / `language`) and the item fields. `source` (`imported` / `manual`, default `manual`) | `item`: the new item with `id`, `checked = 0`, and the `review_link` (`/review?type=<type>&id=<id>`) |
+| `profile_item_update` | Change one item. Not for skill proofs (delete and add again). | `id`, `changes`: `type` and the fields to change | `item`: the changed item, `checked = 0`, and the `review_link` |
 | `profile_item_delete` | Delete one item. Destructive. | `type`, `id` | What was deleted, **including proofs removed with it**, and which jobs to re-match. |
 Review link notes (there is no separate review tool):
 - Every tool that saves something to check answers with a `review_link`, and the AI ends its reply with it. This works for profile items **and** company notes (later).
