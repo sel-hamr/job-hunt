@@ -21,3 +21,6 @@ A tool that changes profile data also returns the review link (`lib/review-link.
 | `profile_update` | `profile/update.ts` |
 | `profile_import` | `profile/import.ts` |
 | `profile_reset` | `profile/reset.ts` |
+| `profile_item_add` | `profile/item-add.ts` |
+| `profile_item_update` | `profile/item-update.ts` |
+| `profile_item_delete` | `profile/item-delete.ts` |
