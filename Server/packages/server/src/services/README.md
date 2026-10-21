@@ -16,6 +16,7 @@ Why: easy to test, and easy to reuse later (CLI, web page, ...).
 | File | Functions |
 |---|---|
 | `profile.ts` | `getProfileWithItems(db, { onlyChecked })`, `getItem`, `updateProfile`, `addItem`, `updateItem`, `deleteItem` |
+| `skill-years.ts` | `addSkillYears`: each skill's `years` and `work_years`, from the dates of its checked proofs (rules: `docs/DATABASE.md`, part 9). No database: it gets the lists from `getProfileWithItems`. |
 | `review.ts` | `listUnchecked`, `checkItems`, `fixAndCheck`: the **only** code that sets `checked = 1` (only the admin API calls it, never a tool) |
 | `stats.ts` | `getStats`: the numbers for Home (job numbers are 0 until build step 2) |
 

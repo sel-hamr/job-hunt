@@ -29,6 +29,7 @@ import { deleteAllProfileRows } from "../db/repositories/reset.ts";
 import * as skillProofs from "../db/repositories/skill-proofs.ts";
 import * as skills from "../db/repositories/skills.ts";
 import { ConflictError, NotFoundError, RuleError } from "../lib/errors.ts";
+import { addSkillYears } from "./skill-years.ts";
 
 // The profile rules, used by the MCP tools and the admin API alike.
 // The main rule: a normal edit always makes the item NOT checked (docs/DATABASE.md, part 12).
@@ -77,14 +78,18 @@ export function getItem(db: Db, type: ProfileItemType, id: number): ProfileItem 
 
 // The whole profile. With onlyChecked, only facts I have checked are kept: the AI uses
 // this to match jobs and write CVs, so it never uses a fact I haven't confirmed.
+// Each skill comes with its years, counted from checked proofs only, in both modes.
 export function getProfileWithItems(db: Db, options: { onlyChecked?: boolean } = {}): ProfileWithItems {
+  const experienceList = experiences.listExperiences(db);
+  const proofList = skillProofs.listSkillProofs(db);
+  const projectList = projects.listProjects(db);
   const all: ProfileWithItems = {
     profile: profile.getProfile(db) ?? null,
-    experiences: experiences.listExperiences(db),
+    experiences: experienceList,
     achievements: achievements.listAchievements(db),
-    skills: skills.listSkills(db),
-    skill_proofs: skillProofs.listSkillProofs(db),
-    projects: projects.listProjects(db),
+    skills: addSkillYears(skills.listSkills(db), proofList, experienceList, projectList),
+    skill_proofs: proofList,
+    projects: projectList,
     education: education.listEducation(db),
     certificates: certificates.listCertificates(db),
     languages: languages.listLanguages(db),
