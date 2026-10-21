@@ -161,6 +161,15 @@ const skillFields = {
 export const SkillSchema = z.object({ type: z.literal("skill"), ...savedFields, ...skillFields });
 export type Skill = z.infer<typeof SkillSchema>;
 
+// A skill as the profile shows it: with its years, counted from the dates of the
+// checked jobs and projects that prove it. Never saved, never sent as input.
+const Years = z.number().min(0); // one decimal, rounded down
+export const SkillWithYearsSchema = SkillSchema.extend({
+  years: Years, // jobs and projects together
+  work_years: Years, // jobs only
+});
+export type SkillWithYears = z.infer<typeof SkillWithYearsSchema>;
+
 export const SkillCreateInputSchema = z
   .object({ type: z.literal("skill"), ...skillFields })
   .partial({ other_names: true });
@@ -350,7 +359,7 @@ export const ProfileWithItemsSchema = z.object({
   profile: ProfileSchema.nullable(), // null until the profile is first saved
   experiences: z.array(ExperienceSchema),
   achievements: z.array(AchievementSchema),
-  skills: z.array(SkillSchema),
+  skills: z.array(SkillWithYearsSchema),
   skill_proofs: z.array(SkillProofSchema),
   projects: z.array(ProjectSchema),
   education: z.array(EducationSchema),

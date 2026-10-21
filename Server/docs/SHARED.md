@@ -156,7 +156,8 @@ Choice lists: `EXPERIENCE_TYPES`, `SKILL_CATEGORIES`, `SKILL_LEVELS`, `LANGUAGE_
 | `ProfileItemSchema` | a **discriminated union** on `type`: `{ type: "experience", ...Experience }`, `{ type: "skill", ...Skill }`, ... |
 | `ProfileItemCreateInputSchema` | the same union, with the create fields only |
 | `ProfileItemUpdateInputSchema` | the same union (no `skill_proof`), every field optional, at least one. **No defaults**: Zod 4's `.partial()` fills in defaults, which would overwrite saved values. Achievement links can't change. |
-| `ProfileWithItemsSchema` | `profile` (`null` until first saved) + one list per kind (answer of `GET /api/profile`) |
+| `SkillWithYearsSchema` | a saved `Skill` + `years` (jobs and projects) and `work_years` (jobs only). Counted by the server, never saved, never an input. |
+| `ProfileWithItemsSchema` | `profile` (`null` until first saved) + one list per kind (answer of `GET /api/profile`). Its skills are `SkillWithYears`. |
 | `ProfileImportInputSchema` | the input of `profile_import`: the profile + nested items with `ref` names and `proven_by` (see `TOOLS.md`, "`profile_import` input"). Checks inside the payload: unique `ref`s, known `proven_by` refs, no duplicate skill or language names. |
 | `ProfileImportResultSchema` | the answer of `profile_import`: `counts` (one count per item kind), `ids` (`ref` → new id), `not_checked`. The tool adds `review_link`. |
 | `ProfileResetInputSchema` | the input of `profile_reset`: `confirm`, exactly `PROFILE_RESET_CONFIRM` (`"DELETE MY PROFILE"`) |
