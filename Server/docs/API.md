@@ -40,7 +40,7 @@ Until jobs exist (build step 2), the job numbers are `0` and `top_missing_skills
 
 | Method + address | What it does | Input | Output |
 |---|---|---|---|
-| `GET /api/profile` | My profile and all items, grouped by kind. | | Profile + items (each with `checked`) |
+| `GET /api/profile` | My profile and all items, grouped by kind. | | Profile + items (each with `checked`). Each skill also has `years` and `work_years`, counted, never saved. |
 | `PATCH /api/profile` | Change my profile (name, headline, ...). | The fields to change | The changed profile |
 | `POST /api/profile/items` | Add an item. | `type` + the fields of that kind | The new item (`source = manual`, `checked = 0`) |
 | `PATCH /api/profile/items/:type/:id` | Change an item. Not for `skill_proof` (delete it and add a new one). | The fields to change (the kind comes from the address) | The changed item. **If it was checked, it becomes not checked.** |

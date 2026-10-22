@@ -431,7 +431,16 @@ These are **counted when asked** (SQL views or queries), never saved. So they ar
 |---|---|
 | **Fit label** of a job | From `matches` of its must-haves: all `yes` → **Good fit**. Exactly 1 `no`, or no `no` but at least 1 `partly` → **Some gaps**. 2 or more `no` → **Big gaps**. No match saved yet → **Not matched**. |
 | **Gap report** | Count the keywords of requirements whose match is `no` (or `partly`), across all jobs, **including skipped ones**. Filters: last N jobs, date range, must-have only. |
-| **Years of a skill** | From the dates of the checked experiences and projects that prove it. Overlapping time is counted once. |
+| **Years of a skill** | From the dates of the checked experiences and projects that prove it (the proof must be checked too). Overlapping time is counted once. Two numbers: `years` (jobs and projects) and `work_years` (jobs only). Rules below. |
+
+**How the years of a skill are counted** (`services/skill-years.ts`):
+- Counted in whole months. A year-only date covers the whole year: start `2022` = January 2022, end `2022` = December 2022. So "2022 – 2023" is 24 months.
+- A job with no `end_date` is still going: it counts until this month.
+- A project with no `end_date` counts only its start month (it may have stopped long ago). A project with no `start_date` doesn't count.
+- Time after this month doesn't count yet.
+- Education and certificates prove a skill, but give no years.
+- Months become years with one decimal, **rounded down**: 31 months = 2.5 years. A fact is never rounded up.
+- A skill with no checked job or project proof has `0`. The skill itself doesn't need to be checked to show its years.
 
 ---
 

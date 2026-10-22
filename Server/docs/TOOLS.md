@@ -3,7 +3,7 @@
 Every MCP tool and prompt the server offers. **This file is the source of truth for tools.**
 If you add or change a tool, update this file in the same change.
 
-Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, `profile_item_add`, `profile_item_update`, `profile_item_delete`, and the `import_cv` prompt. The HTTP door (`/mcp`) and the dashboard's `/api` are done too. Next: skill years in `profile_get` (see `AGENTS.md`, "Current status").
+Status: building. Done: `profile_get`, `profile_update`, `profile_import`, `profile_reset`, `profile_item_add`, `profile_item_update`, `profile_item_delete`, and the `import_cv` prompt. The HTTP door (`/mcp`) and the dashboard's `/api` are done too. `profile_get` counts each skill's years. Next: build step 2, Jobs + match (see `AGENTS.md`, "Current status").
 
 ---
 
@@ -35,7 +35,7 @@ The item sits in its own field (`item` or `changes`), not at the top of the inpu
 
 | Tool | What it does | Input | Output |
 |---|---|---|---|
-| `profile_get` | Read my whole profile. Read-only. | `only_checked` (yes/no, default no) | Profile + all items, each with `checked`. Skills include **years** (counted from proofs). |
+| `profile_get` | Read my whole profile. Read-only. | `only_checked` (yes/no, default no) | Profile + all items, each with `checked`. Each skill has **`years`** (jobs and projects) and **`work_years`** (jobs only), counted from the dates of its checked proofs (`DATABASE.md`, part 9). |
 | `profile_update` | Save or change the main profile row (name, headline, contact, summary, links). The first save needs a `name`. | The fields to change | The profile, `checked = 0`, and the review link (`/review?type=profile`). |
 | `profile_reset` | **Delete my whole profile** and every item, checked or not. Can't be undone. Destructive. Only when I clearly ask (for example, to run `profile_import` again). Also a script for me: `npm run reset-profile`. | `confirm`: exactly `"DELETE MY PROFILE"` | What was deleted: whether there was a profile row, and counts per kind |
 | `profile_import` | **First setup from my CV and portfolio**, in one call and one transaction (all or nothing). Only works when the profile is **empty** (no profile row and no items). | The whole profile, nested (see below) | Counts per kind, the new `id` for each `ref`, how many items are not checked yet, and the `review_link` (`/review`) |

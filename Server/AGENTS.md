@@ -54,12 +54,13 @@ Build steps are from `docs/PRODUCT.md` ("Build order"). We are in **build step 1
 ### Done (2026-10-21)
 
 - `profile_item_add` / `profile_item_update` / `profile_item_delete` tools (`src/tools/profile/item-*.ts`), on the same services as the admin API. Add and update answer with the item's review link. The item sits in `item` / `changes`, so the tool input is a plain object at the top.
+- Skill years (`services/skill-years.ts`): `profile_get` and `GET /api/profile` give each skill `years` (jobs and projects) and `work_years` (jobs only), from the dates of its checked proofs. `@jobhunt/shared`: `SkillWithYearsSchema`. Rules: `docs/DATABASE.md`, part 9.
+
+**Build step 1 (Profile) is done.**
 
 ### Next
 
-1. **Skill years** in `profile_get` (counted from the dates of checked proofs, overlaps once).
-
-After step 1 is done: build step 2 (Jobs + match), see `docs/PRODUCT.md`.
+Build step 2 (Jobs + match), see `docs/PRODUCT.md`.
 
 ## How to work here
 
